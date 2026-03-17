@@ -31,14 +31,14 @@ Rancangan UI aplikasi yang berfokus pada pengalaman pengguna.
 
 | Login Page | Dashboard | Core Feature |
 | :---: | :---: | :---: |
-| ![Login](assets/login.png) | ![Dash](assets/dash.png) | ![Feature](assets/feature.png) |
+| ![Login](Images/Assets/Figma/Login.jpg) | ![Dash](Images/Assets/Figma/Home%20Page%20-%20User.png) | ![Feature](Images/Assets/Figma/Perencanaan.png) |
 
 ---
 
 ## 🛠️ Stack Teknologi
-- **Frontend:** Next.js / Java Swing
-- **Backend:** Node.js / Java 
-- **Database:** PostgreSQL / MySQL
+- **Frontend:** React.js
+- **Backend:** Python 
+- **Database:** Firebase
 
 ---
 

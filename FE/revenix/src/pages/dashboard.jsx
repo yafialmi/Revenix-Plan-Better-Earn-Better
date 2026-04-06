@@ -43,7 +43,7 @@ function Dashboard() {
             </p>
           </div>
 
-          <button className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-white shadow transition duration-200 hover:bg-blue-700">
+          <button className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-white shadow transition duration-200 hover:bg-blue-700 cursor-pointer">
             <svg width={20} height={20} viewBox="0 0 32 32">
               <path
                 fill="white"

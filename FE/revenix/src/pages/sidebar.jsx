@@ -1,11 +1,19 @@
 import logo from "../assets/logo2.png";
-import { NavLink } from "react-router-dom";
-import Dashboard from "./dashboard";
+import { NavLink, useNavigate } from "react-router-dom";
 
 function Sidebar() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("idToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("userEmail");
+    sessionStorage.clear();
+    navigate("/login");
+  };
+
   const navigation = [
     {
-        /* Sidebar Dashboard */
       name: "Dashboard",
       path: "/dashboard",
       icon: (
@@ -26,28 +34,21 @@ function Sidebar() {
       ),
     },
     {
-        /* Sidebar Perencanaan */
       name: "Perencanaan",
       path: "/perencanaan",
       icon: (
         <svg width={20} height={20} viewBox="0 0 24 24">
-          <g
-            fill="none"
-            stroke="currentColor"
-            strokeLinejoin="round"
-            strokeWidth={2}
-          >
+          <g fill="none" stroke="currentColor" strokeWidth={2}>
             <path
               strokeLinecap="round"
               d="M4 4v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.342a2 2 0 0 0-.602-1.43l-4.44-4.342A2 2 0 0 0 13.56 2H6a2 2 0 0 0-2 2"
-            ></path>
+            />
             <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
           </g>
         </svg>
       ),
     },
     {
-        /* Sidebar Laporan */
       name: "Laporan",
       path: "/laporan",
       icon: (
@@ -66,26 +67,31 @@ function Sidebar() {
   ];
 
   return (
-    <aside className="w-[250px] h-screen bg-white border-r flex flex-col justify-between p-6">
+    <aside className="w-[260px] min-w-[260px] max-w-[260px] h-screen bg-white border-r border-gray-200 flex-none flex flex-col justify-between p-6">
       <div>
         <div className="flex items-center gap-3 mb-10">
-          <img src={logo} alt="logo" className="w-16 h-16 rounded-full" />
-          <div>
-            <h1 className="block text-base mb-1 font-poppins font-bold tracking-wide">Revenix</h1>
-            <p className="text-sm text-gray-500">Planning & Forecasting</p>
+          <img src={logo} alt="logo" className="w-16 h-16 rounded-full object-cover" />
+          <div className="min-w-0">
+            <h1 className="text-base font-poppins font-bold tracking-wide text-black">
+              Revenix
+            </h1>
+            <p className="text-sm text-gray-500 leading-5">
+              Planning & Forecasting
+            </p>
           </div>
         </div>
-        {/* Menu */}
+
         <nav className="space-y-4">
           {navigation.map((item) => (
             <NavLink
               key={item.name}
               to={item.path}
               className={({ isActive }) =>
-                `flex items-center gap-3 cursor-pointer transition duration-200 ${
-            isActive
-            ? "text-blue-600 font-bold"
-            : "text-gray-600 hover:text-blue-600 font-medium"                }`
+                `flex items-center gap-3 transition duration-200 ${
+                  isActive
+                    ? "text-blue-600 font-bold"
+                    : "text-gray-600 hover:text-blue-600 font-medium"
+                }`
               }
             >
               {item.icon}
@@ -94,8 +100,11 @@ function Sidebar() {
           ))}
         </nav>
       </div>
-    {/* LOGOUT */}
-      <button className="flex items-center justify-center gap-2 border border-blue-500 text-blue-500 py-2 rounded-lg hover:bg-blue-50 hover:scale-105 transition duration-200 cursor-pointer">
+
+      <button
+        onClick={handleLogout}
+        className="flex items-center justify-center gap-2 border border-blue-500 text-blue-500 py-2 rounded-lg hover:bg-blue-50 transition duration-200 cursor-pointer"
+      >
         <svg width={20} height={20} viewBox="0 0 24 24">
           <path
             fill="currentColor"

@@ -2,6 +2,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import Login from "./pages/login";
 import Dashboard from "./pages/dashboard";
+import Perencanaan from "./pages/perencanaan";
+import Laporan from "./pages/laporan";
 
 function App() {
   return (
@@ -36,6 +38,8 @@ function App() {
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/perencanaan" element={<Perencanaan />} />
+        <Route path="/laporan" element={<Laporan />} />
       </Routes>
     </>
   );

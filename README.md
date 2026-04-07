@@ -11,7 +11,7 @@
 
 
 ### DFD Level 0
-![DFD Level 0](Images/DFD/DFD0.jpeg)
+![DFD Level 0](Images/DFD/DFD00.jpeg)
 
 Pada diagram ini terdapat dua entitas yaitu user dan admin. User dapat melakukan login, menginput data perencanaan, meminta proses forecasting, serta melihat laporan yang dihasilkan oleh sistem. Respon dari sistem yaitu memberikan keluaran berupa status login, hasil perencanaan, hasil forecasting, dan data laporan.Selain itu, Admin berperan dalam mengelola sistem. Admin dapat melakukan login serta mengelola data yang ada di dalam sistem. Sistem kemudian memberikan keluaran berupa status login admin dan laporan sistem.
 

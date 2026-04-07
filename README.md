@@ -6,6 +6,10 @@
 
 ## 📊 Perancangan Sistem (DFD)
 
+### Class Diagram
+![Class Diagram](Images/class_diagram_impal.png)
+
+
 ### DFD Level 0
 ![DFD Level 0](Images/DFD/DFD0.jpeg)
 

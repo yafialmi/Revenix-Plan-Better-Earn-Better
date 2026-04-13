@@ -2,21 +2,18 @@ import Sidebar from "./sidebar";
 
 function Perencanaan() {
   return (
-    <div className="h-screen flex bg-gradient-to-br from-[#f5f4ff] to-[#eef5fb] overflow-hidden">
+    <div className="h-screen flex bg-gradient-to-br from-[#f5f4ff] to-[#eef5fb] overflow-hidden font-poppins">
       {/* Sidebar */}
       <Sidebar />
 
       {/* Main Content */}
-      <main className="flex-1 min-w-0 p-6 flex flex-col overflow-hidden">        {/* Header */}
+      <main className="flex-1 min-w-0 p-6 flex flex-col overflow-hidden">
+        {" "}
+        {/* Header */}
         <div className="mb-4">
-          <h1 className="text-3xl font-bold font-poppins mb-1">
-            Perencanaan
-          </h1>
-          <p className="text-base font-semibold">
-            Selamat datang, User [ ]
-          </p>
+          <h1 className="text-3xl font-bold font-poppins mb-1">Perencanaan</h1>
+          <p className="text-base font-semibold">Selamat datang, User [ ]</p>
         </div>
-
         {/* Pencarian */}
         <section className="bg-white rounded-xl shadow-sm p-4 mb-4">
           <h2 className="text-lg font-bold mb-3">Pencarian</h2>
@@ -51,14 +48,11 @@ function Perencanaan() {
             </button>
           </div>
         </section>
-
         {/* Detail Laporan */}
         <section className="bg-white rounded-xl shadow-sm p-4 flex-1 flex flex-col">
           <div className="flex items-start justify-between mb-3">
             <div>
-              <h2 className="text-lg font-bold font-poppins">
-                Detail Laporan
-              </h2>
+              <h2 className="text-lg font-bold font-poppins">Detail Laporan</h2>
               <p className="text-sm text-gray-500">
                 Daftar semua perencanaan yang tersimpan
               </p>
@@ -96,9 +90,7 @@ function Perencanaan() {
               />
             </svg>
 
-            <p className="mt-2 text-sm">
-              Tidak ada data yang ditemukan
-            </p>
+            <p className="mt-2 text-sm">Tidak ada data yang ditemukan</p>
           </div>
         </section>
       </main>

@@ -2,12 +2,14 @@ import Sidebar from "./sidebar";
 
 function Laporan() {
   return (
-    <div className="h-screen flex bg-gradient-to-br from-[#f5f4ff] to-[#eef5fb] overflow-hidden font-poppins">
+    <div className="h-screen flex bg-gradient-to-br from-[#f5f4ff] to-[#eef5fb] font-poppins overflow-hidden">
       {/* Sidebar */}
       <Sidebar />
 
       {/* Main Content */}
-      <main className="flex-1 min-w-0 p-6 flex flex-col overflow-hidden">        {/* Header */}
+      <main className="flex-1 min-w-0 p-6 flex flex-col overflow-hidden">
+        {" "}
+        {/* Header */}
         <div className="mb-4">
           <h1 className="text-3xl font-bold font-poppins text-black mb-1">
             Laporan
@@ -16,7 +18,6 @@ function Laporan() {
             Selamat datang, User [ ]
           </p>
         </div>
-
         {/* Filter */}
         <section className="bg-white rounded-xl shadow-sm p-4 mb-4">
           <h2 className="text-lg font-bold font-poppins mb-3">
@@ -53,7 +54,6 @@ function Laporan() {
             </button>
           </div>
         </section>
-
         {/* Statistik */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
           <div className="bg-white rounded-xl shadow-sm p-4">
@@ -80,13 +80,10 @@ function Laporan() {
             <p className="text-xs text-gray-500">Semua Periode</p>
           </div>
         </section>
-
         {/* Detail Laporan */}
         <section className="bg-white rounded-xl shadow-sm p-4 flex-1 flex flex-col overflow-hidden">
           <div className="mb-3">
-            <h2 className="text-lg font-bold font-poppins">
-              Detail Laporan
-            </h2>
+            <h2 className="text-lg font-bold font-poppins">Detail Laporan</h2>
             <p className="text-sm text-gray-500">
               Daftar semua perencanaan yang tersimpan
             </p>

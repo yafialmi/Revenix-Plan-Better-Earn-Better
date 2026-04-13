@@ -5,6 +5,7 @@ import Dashboard from "./pages/dashboard";
 import Perencanaan from "./pages/perencanaan";
 import Laporan from "./pages/laporan";
 import InputPerencanaan from "./pages/InputPerencanaan";
+import ProtectedRoute from "./components/protected_routes";
 
 function App() {
   return (
@@ -36,12 +37,49 @@ function App() {
           Contoh: www.website.com/(path)
           Element berfungsi untuk memberi tahu React, isi konten halaman yang kita navigasikan itu yang mana sebagai contoh element Login akan ngeload function Login.
         */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route
+          path="/"
+          element={
+            localStorage.getItem("idToken") ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/perencanaan" element={<Perencanaan />} />
-        <Route path="/laporan" element={<Laporan />} />
-        <Route path="/InputPerencanaan" element={<InputPerencanaan />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/perencanaan"
+          element={
+            <ProtectedRoute>
+              <Perencanaan />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/laporan"
+          element={
+            <ProtectedRoute>
+              <Laporan />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/InputPerencanaan"
+          element={
+            <ProtectedRoute>
+              <InputPerencanaan />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </>
   );

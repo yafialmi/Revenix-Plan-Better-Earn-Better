@@ -2,7 +2,7 @@ import Sidebar from "./sidebar";
 
 function Perencanaan() {
   return (
-    <div className="h-screen flex bg-gradient-to-br from-[#f5f4ff] to-[#eef5fb] overflow-hidden">
+    <div className="h-screen flex bg-gradient-to-br from-[#f5f4ff] to-[#eef5fb] overflow-hidden  font-poppins">
       {/* Sidebar */}
       <Sidebar />
 

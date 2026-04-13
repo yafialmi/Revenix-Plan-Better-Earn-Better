@@ -23,20 +23,12 @@ const axiosInstanceAuthenticated = axios.create({
   },
 });
 
-{
-  /* Logic untuk pengecekan headers Authorization, meminta localStorage (cache) dari website untuk pengecekan apakah user memiliki token atau tidak, apabila tidak maka akan dialihkan ke reject */
-}
-axiosInstanceAuthenticated.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("idToken");
-
-    if (token) {
-      config.headers.Authorization = `${token}`;
-    }
-
-    return config;
-  },
-  (error) => Promise.reject(error),
-);
+axiosInstanceAuthenticated.interceptors.request.use((config) => {
+  const token = localStorage.getItem("idToken");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 export { axiosInstanceDefault, axiosInstanceAuthenticated };

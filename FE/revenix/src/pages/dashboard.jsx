@@ -31,13 +31,14 @@ function EmptyCard({ height = "h-full" }) {
 }
 
 function Dashboard() {
-  const navigate = useNavigate();
-
+const navigate  = useNavigate();
   return (
     <div className="h-screen flex bg-gradient-to-br from-gray-100 to-blue-100 font-poppins overflow-hidden">
       <Sidebar />
 
-        <main className="flex-1 min-w-0 p-6 flex flex-col overflow-hidden">         <div className="mb-5 flex items-start justify-between">
+      <main className="flex-1 min-w-0 p-6 flex flex-col overflow-hidden">
+        {" "}
+        <div className="mb-5 flex items-start justify-between">
           <div>
             <h1 className="text-3xl font-bold">Dashboard</h1>
             <p className="mt-1 text-sm text-gray-600">
@@ -45,7 +46,7 @@ function Dashboard() {
             </p>
           </div>
 
-          <button className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-white shadow transition duration-200 hover:bg-blue-700 cursor-pointer">
+          <button className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-white shadow transition duration-200 hover:bg-blue-700 cursor-pointer" onClick={()=> navigate('/inputperencanaan')}>
             <svg width={20} height={20} viewBox="0 0 32 32">
               <path
                 fill="white"
@@ -55,7 +56,6 @@ function Dashboard() {
             <span>Buat Perencanaan Baru</span>
           </button>
         </div>
-
         <div className="mb-4 grid grid-cols-4 gap-4">
           <CardSummary title="Total Pemasukkan" subtitle="Total keuangan" />
           <CardSummary
@@ -68,7 +68,6 @@ function Dashboard() {
           />
           <CardSummary title="Estimasi Laba/Rugi" subtitle="Periode terbaru" />
         </div>
-
         <div className="grid grid-cols-2 gap-4 flex-1 min-h-0">
           <div className="flex flex-col gap-4 min-h-0">
             <div className="h-[150px]">

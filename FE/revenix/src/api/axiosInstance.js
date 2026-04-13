@@ -28,7 +28,7 @@ const axiosInstanceAuthenticated = axios.create({
 }
 axiosInstanceAuthenticated.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("idToken");
 
     if (token) {
       config.headers.Authorization = `${token}`;

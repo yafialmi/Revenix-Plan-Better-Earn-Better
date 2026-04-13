@@ -6,8 +6,23 @@ from app.perhitungan_routes import router as perhitungan_router
 from app.persetujuan_routes import router as persetujuan_router
 from app.dashboard_routes import router as dashboard_router
 from app.laporan_routes import router as laporan_router
+from fastapi.middleware.cors import CORSMiddleware
+
 
 app = FastAPI()
+
+origins = [    
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,   # or ["*"] for development only
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def root():

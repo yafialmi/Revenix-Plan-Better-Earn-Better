@@ -31,5 +31,6 @@ def login(data: LoginRequest):
         "message": "Login berhasil",
         "idToken": result["idToken"],  
         "refreshToken": result["refreshToken"],
-        "email": result["email"]
+        "email": result["email"],
+        "displayName": result["displayName"]
     }

@@ -67,7 +67,7 @@ function CardSummary({ title, value, subtitle }) {
   );
 }
 
-function Dashboard() {
+function DashboardAdm() {
   const navigate = useNavigate();
 
   // Total pemasukan dihitung dari akumulasi estimasi pemasukan setiap periode.
@@ -115,12 +115,12 @@ function Dashboard() {
         <div className="mb-4 flex items-start justify-between shrink-0">
           <div>
             <h1 className="text-3xl font-bold">Dashboard</h1>
-            <p className="mt-1 text-sm text-gray-600">Selamat datang, User</p>
+            <p className="mt-1 text-sm text-gray-600">Selamat datang, Admin</p>
           </div>
 
           <button
             className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-white shadow transition duration-200 hover:bg-blue-700 cursor-pointer"
-            onClick={() => navigate("/inputperencanaan")}
+            onClick={() => navigate("/konfirmasiPerencanaan")}
           >
             <svg width={20} height={20} viewBox="0 0 32 32">
               <path
@@ -128,11 +128,11 @@ function Dashboard() {
                 d="M16 3C8.832 3 3 8.832 3 16s5.832 13 13 13s13-5.832 13-13S23.168 3 16 3m0 2c6.087 0 11 4.913 11 11s-4.913 11-11 11S5 22.087 5 16S9.913 5 16 5m-1 5v5h-5v2h5v5h2v-5h5v-2h-5v-5z"
               />
             </svg>
-            <span>Buat Perencanaan Baru</span>
+            <span>Konfirmasi Perencanaan</span>
           </button>
         </div>
 
-        {/* Ringkasan angka utama yang membantu user membaca kondisi keuangan secara cepat. */}
+        {/* Ringkasan angka utama yang membantu admin membaca kondisi keuangan secara cepat. */}
         <div className="mb-4 grid grid-cols-4 gap-4 shrink-0">
           <CardSummary
             title="Total Pemasukkan"
@@ -272,4 +272,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default DashboardAdm;

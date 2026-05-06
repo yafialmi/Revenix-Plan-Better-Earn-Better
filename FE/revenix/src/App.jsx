@@ -5,7 +5,10 @@ import Dashboard from "./pages/dashboard";
 import Perencanaan from "./pages/perencanaan";
 import Laporan from "./pages/laporan";
 import InputPerencanaan from "./pages/InputPerencanaan";
+import KonfirmasiPerencanaan from "./pages/konfirmasiPerencanaan";
 import ProtectedRoute from "./components/protected_routes";
+import DashboardAdm from "./pages/dashboardAdm";
+import DetailPerencanaan from "./pages/detailPerencanaan";
 
 function App() {
   return (
@@ -57,6 +60,14 @@ function App() {
           }
         />
         <Route
+          path="/dashboardAdm"
+          element={
+            <ProtectedRoute>
+              <DashboardAdm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/perencanaan"
           element={
             <ProtectedRoute>
@@ -77,6 +88,22 @@ function App() {
           element={
             <ProtectedRoute>
               <InputPerencanaan />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/konfirmasiPerencanaan"
+          element={
+            <ProtectedRoute>
+              <KonfirmasiPerencanaan />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/detail-perencanaan/:tahun"
+          element={
+            <ProtectedRoute>
+              <DetailPerencanaan />
             </ProtectedRoute>
           }
         />

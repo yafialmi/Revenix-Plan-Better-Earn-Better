@@ -20,8 +20,8 @@ export default function InputPerencanaan() {
         parseInt(periode),
         parseFloat(target_revenue),
         parseFloat(aov),
-        parseFloat(cost_per_lead),
         parseFloat(conversion_rate),
+        parseFloat(cost_per_lead),
         parseFloat(total_biaya_op),
       );
       toast.success(`${data["message"]}`);
@@ -140,7 +140,7 @@ export default function InputPerencanaan() {
               {/* BUTTON */}
               <button
                 type="submit"
-                className="mt-8 flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl font-poppins hover:bg-blue-700 transition ease-in-out"
+                className="mt-8 flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl font-poppins hover:bg-blue-700 transition ease-in-out cursor-pointer"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

@@ -83,7 +83,9 @@ function Dashboard() {
         <div className="mb-4 flex items-start justify-between shrink-0">
           <div>
             <h1 className="text-3xl font-bold">Dashboard</h1>
-            <p className="mt-1 text-sm text-gray-600">Selamat datang, </p>
+            <p className="mt-1 text-sm text-gray-600">
+              Selamat datang, {username}
+            </p>
           </div>
 
           <button

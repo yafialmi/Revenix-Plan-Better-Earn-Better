@@ -20,6 +20,8 @@ function Login() {
       localStorage.setItem("idToken", data.idToken);
       localStorage.setItem("refreshToken", data.refreshToken);
       localStorage.setItem("userEmail", data.email);
+      localStorage.setItem("username", data.username);
+      localStorage.setItem("role", data.role);
       toast.success(`Login Berhasil! Selamat datang ${email}`);
       navigate("/dashboard", { replace: true });
     } catch (error) {

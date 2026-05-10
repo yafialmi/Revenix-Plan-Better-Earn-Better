@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import Sidebar from "./sidebar";
 import { useNavigate } from "react-router-dom";
 import {
@@ -10,46 +11,8 @@ import {
   CartesianGrid,
   Legend,
 } from "recharts";
-
-// Data dummy yang menjadi sumber seluruh ringkasan, list terbaru, dan grafik dashboard.
-const dashboardData = [
-  {
-    id: 1,
-    periode: "Jan 2026",
-    targetRevenue: 10000000,
-    totalBiaya: 2000000,
-    estimasiPemasukan: 8000000,
-    labaRugi: 6000000,
-    status: "Belum Tercapai",
-  },
-  {
-    id: 2,
-    periode: "Feb 2026",
-    targetRevenue: 15000000,
-    totalBiaya: 3000000,
-    estimasiPemasukan: 17000000,
-    labaRugi: 14000000,
-    status: "Tercapai",
-  },
-  {
-    id: 3,
-    periode: "Mar 2026",
-    targetRevenue: 12000000,
-    totalBiaya: 2500000,
-    estimasiPemasukan: 13000000,
-    labaRugi: 10500000,
-    status: "Tercapai",
-  },
-  {
-    id: 4,
-    periode: "Apr 2026",
-    targetRevenue: 18000000,
-    totalBiaya: 4000000,
-    estimasiPemasukan: 16000000,
-    labaRugi: 12000000,
-    status: "Belum Tercapai",
-  },
-];
+import { fetchDataDashboard } from "../services/dashboard/dashboardServices";
+import toast from "react-hot-toast";
 
 // Mengubah angka mentah menjadi format mata uang Rupiah agar konsisten di seluruh UI.
 function formatRupiah(value) {
@@ -61,51 +24,56 @@ function CardSummary({ title, value, subtitle }) {
   return (
     <div className="rounded-xl border bg-white p-4 shadow-sm">
       <h3 className="text-sm font-semibold text-gray-700">{title}</h3>
-      <p className="mt-2 text-2xl font-bold">{formatRupiah(value)}</p>
+      <p className="mt-2 text-2xl font-bold">{value}</p>
       <span className="mt-1 block text-xs text-gray-500">{subtitle}</span>
     </div>
   );
 }
 
 function Dashboard() {
+  const [dataDashboard, setDataDashboard] = useState(null);
+  const [loading, setLoading] = useState(null);
+  const username = localStorage.getItem("username");
+  useEffect(() => {
+    const getDashboard = async () => {
+      try {
+        const data = await fetchDataDashboard();
+        setDataDashboard(data);
+      } catch (error) {
+        toast.error(`${error.message || error}`);
+      }
+    };
+
+    getDashboard();
+  }, []);
+
   const navigate = useNavigate();
 
-  // Total pemasukan dihitung dari akumulasi estimasi pemasukan setiap periode.
-  const totalPemasukan = dashboardData.reduce(
-    (total, item) => total + item.estimasiPemasukan,
-    0
-  );
+  const calculateForecast = (data) => {
+    const customer = data.target_revenue / data.aov;
 
-  // Total target revenue dihitung untuk melihat seluruh target dari semua periode.
-  const totalTargetRevenue = dashboardData.reduce(
-    (total, item) => total + item.targetRevenue,
-    0
-  );
+    const leads = customer / (data.conversion_rate / 100);
 
-  // Total pengeluaran berasal dari akumulasi biaya di semua periode perencanaan.
-  const totalPengeluaran = dashboardData.reduce(
-    (total, item) => total + item.totalBiaya,
-    0
-  );
+    const budget = leads * data.cost_per_lead;
 
-  // Total laba/rugi digunakan sebagai estimasi performa keuangan keseluruhan.
-  const totalLabaRugi = dashboardData.reduce(
-    (total, item) => total + item.labaRugi,
-    0
-  );
+    const forecast = data.target_revenue - data.total_biaya_op - budget;
+
+    return {
+      status: forecast > 0 ? "Tercapai" : "Tidak Tercapai",
+    };
+  };
 
   // Menghitung jumlah periode yang sudah memenuhi target revenue.
-  const totalTercapai = dashboardData.filter(
-    (item) => item.status === "Tercapai"
-  ).length;
+  const totalTercapai =
+    dataDashboard?.perencanaan_terbaru?.filter(
+      (item) => calculateForecast(item).status === "Tercapai",
+    ).length ?? 0;
 
   // Menghitung jumlah periode yang belum memenuhi target revenue.
-  const totalBelumTercapai = dashboardData.filter(
-    (item) => item.status === "Belum Tercapai"
-  ).length;
-
-  // Data dibalik supaya periode terbaru muncul paling atas pada daftar.
-  const recentData = dashboardData.slice().reverse();
+  const totalBelumTercapai =
+    dataDashboard?.perencanaan_terbaru?.filter(
+      (item) => calculateForecast(item).status === "Tidak Tercapai",
+    ).length ?? 0;
 
   return (
     <div className="h-screen flex bg-gradient-to-br from-gray-100 to-blue-100 font-poppins overflow-hidden">
@@ -115,7 +83,7 @@ function Dashboard() {
         <div className="mb-4 flex items-start justify-between shrink-0">
           <div>
             <h1 className="text-3xl font-bold">Dashboard</h1>
-            <p className="mt-1 text-sm text-gray-600">Selamat datang, User</p>
+            <p className="mt-1 text-sm text-gray-600">Selamat datang, </p>
           </div>
 
           <button
@@ -135,23 +103,29 @@ function Dashboard() {
         {/* Ringkasan angka utama yang membantu user membaca kondisi keuangan secara cepat. */}
         <div className="mb-4 grid grid-cols-4 gap-4 shrink-0">
           <CardSummary
-            title="Total Pemasukkan"
-            value={totalPemasukan}
-            subtitle="Total estimasi pemasukan"
+            title="Total Perencanaan"
+            value={dataDashboard?.summary?.total_perencanaan}
+            subtitle="Total Semua Perencanaan"
           />
           <CardSummary
             title="Total Target Revenue"
-            value={totalTargetRevenue}
+            value={formatRupiah(
+              dataDashboard?.summary?.total_target_revenue ?? 0,
+            )}
             subtitle="Akumulasi semua periode"
           />
           <CardSummary
             title="Estimasi Pengeluaran"
-            value={totalPengeluaran}
+            value={formatRupiah(
+              dataDashboard?.summary?.estimasi_pengeluaran ?? 0,
+            )}
             subtitle="Total semua periode"
           />
           <CardSummary
             title="Estimasi Laba/Rugi"
-            value={totalLabaRugi}
+            value={formatRupiah(
+              dataDashboard?.summary?.estimasi_laba_rugi ?? 0,
+            )}
             subtitle="Total semua periode"
           />
         </div>
@@ -165,27 +139,27 @@ function Dashboard() {
               </h2>
 
               <div className="space-y-2 overflow-y-auto pr-2 min-h-0">
-                {recentData.map((item) => (
+                {dataDashboard?.perencanaan_terbaru?.map((item, index) => (
                   <div
-                    key={item.id}
+                    key={index}
                     className="flex items-center justify-between rounded-lg border px-4 py-3"
                   >
                     <div>
                       <p className="text-sm font-semibold">{item.periode}</p>
                       <p className="text-xs text-gray-500">
-                        Target: {formatRupiah(item.targetRevenue)}
+                        Target: {formatRupiah(item.target_revenue)}
                       </p>
                     </div>
 
                     {/* Warna status dibedakan agar kondisi target mudah dipindai. */}
                     <span
                       className={`text-xs font-semibold ${
-                        item.status === "Tercapai"
+                        calculateForecast(item).status === "Tercapai" // ← tambah .status
                           ? "text-green-600"
                           : "text-red-500"
                       }`}
                     >
-                      {item.status}
+                      {calculateForecast(item).status} {/* ← tambah .status */}
                     </span>
                   </div>
                 ))}
@@ -219,7 +193,8 @@ function Dashboard() {
               </div>
 
               <p className="mt-3 text-xs text-gray-500">
-                {totalTercapai} dari {dashboardData.length} periode sudah
+                {totalTercapai} dari{" "}
+                {dataDashboard?.perencanaan_terbaru?.length ?? 0} periode sudah
                 tercapai
               </p>
             </section>
@@ -239,7 +214,7 @@ function Dashboard() {
             <div className="flex-1 min-h-0">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
-                  data={dashboardData}
+                  data={dataDashboard?.perencanaan_terbaru}
                   margin={{ top: 10, right: 20, left: 0, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
@@ -251,14 +226,14 @@ function Dashboard() {
                   <Tooltip formatter={(value) => formatRupiah(value)} />
                   <Legend />
                   <Bar
-                    dataKey="targetRevenue"
+                    dataKey="target_revenue"
                     name="Target Revenue"
                     fill="#2563eb"
                     radius={[6, 6, 0, 0]}
                   />
                   <Bar
-                    dataKey="totalBiaya"
-                    name="Total Biaya"
+                    dataKey="total_biaya_op"
+                    name="Total Biaya Operasional"
                     fill="#f97316"
                     radius={[6, 6, 0, 0]}
                   />

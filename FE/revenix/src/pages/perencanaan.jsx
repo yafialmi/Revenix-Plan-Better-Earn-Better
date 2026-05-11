@@ -45,15 +45,15 @@ function Perencanaan() {
           <h2 className="text-lg font-bold mb-3">Pencarian</h2>
 
           <div className="flex flex-col md:flex-row gap-3">
-            <div className="flex items-center flex-1 border border-gray-300 rounded-xl px-4 py-2.5">
+            <div className="flex items-center flex-1 border border-gray-300 rounded-xl px-4 py-2.5 focus-within:border-blue-600 transition ease-in-out duration-300">
               <input
                 type="text"
                 placeholder="Cari berdasarkan tahun"
-                className="w-full outline-none text-sm text-gray-500 bg-transparent"
+                className="w-full outline-none text-sm text-gray-500 bg-transparent "
               />
             </div>
 
-            <button className="px-5 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-700 hover:bg-gray-50 transition">
+            <button className="px-5 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-700 hover:bg-red-500 hover:text-white transition duration-300">
               Reset
             </button>
           </div>

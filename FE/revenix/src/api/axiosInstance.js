@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 {
   /* Berfungsi untuk memanggil fungsi Axios*/
@@ -30,5 +31,16 @@ axiosInstanceAuthenticated.interceptors.request.use((config) => {
   }
   return config;
 });
+
+axiosInstanceAuthenticated.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.clear();
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  },
+);
 
 export { axiosInstanceDefault, axiosInstanceAuthenticated };

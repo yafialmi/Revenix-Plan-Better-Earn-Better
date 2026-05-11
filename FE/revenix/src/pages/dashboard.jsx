@@ -45,7 +45,7 @@ function Dashboard() {
         const data = await fetchDataDashboard();
         setDataDashboard(data);
       } catch (e) {
-        toast.e(`${e.message || e.detail}`);
+        toast.error(`${e.message || e.detail}`);
       } finally {
         setLoading(false);
       }

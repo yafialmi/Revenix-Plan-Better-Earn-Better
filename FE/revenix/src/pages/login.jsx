@@ -3,11 +3,13 @@ import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 import { authUser } from "../services/auth/authService";
+import { CircularProgress } from "@mui/material";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
+  const [isLoading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -16,6 +18,7 @@ function Login() {
     }
     try {
       e.preventDefault();
+      setLoading(true);
       const data = await authUser(email, password);
       localStorage.setItem("idToken", data.idToken);
       localStorage.setItem("refreshToken", data.refreshToken);
@@ -26,6 +29,8 @@ function Login() {
       navigate("/dashboard", { replace: true });
     } catch (error) {
       toast.error(`Login Gagal! ${error.message || error}`);
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -119,7 +124,7 @@ function Login() {
               type="submit"
               className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer ease-in-out duration-300"
             >
-              LOGIN
+              {isLoading ? <CircularProgress></CircularProgress> : <p>LOGIN</p>}
             </button>
           </form>
         </div>

@@ -8,6 +8,6 @@ export const fetchDataDashboard = async () => {
     const response = await axiosInstanceAuthenticated.get("/dashboard/summary");
     return response.data;
   } catch (e) {
-    throw e.response?.data || e.message || e.detail;
+    throw e.message || e.detail;
   }
 };

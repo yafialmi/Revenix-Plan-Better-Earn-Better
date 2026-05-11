@@ -3,6 +3,7 @@ import Sidebar from "./sidebar";
 import { useEffect, useState } from "react";
 import { fetchDataPerencaanDetail } from "../services/perencanaan/perencanaan_services";
 import toast from "react-hot-toast";
+import { CircularProgress } from "@mui/material";
 
 function DetailPerencanaan() {
   const navigate = useNavigate();
@@ -60,7 +61,7 @@ function DetailPerencanaan() {
             <div>
               <h1 className="text-3xl font-bold mb-1">Detail Perencanaan</h1>
               <p className="text-sm text-gray-500">
-                Detail data perencanaan untuk periode {dataDetail?.data.periode}
+                Detail data perencanaan untuk periode {periode}
               </p>
             </div>
 
@@ -77,9 +78,7 @@ function DetailPerencanaan() {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
                 <p className="text-sm text-gray-500">Periode</p>
-                <h2 className="text-2xl font-bold">
-                  {dataDetail?.data.periode}
-                </h2>
+                <h2 className="text-2xl font-bold">{periode}</h2>
               </div>
 
               {/* Badge status memberi tanda visual apakah target periode sudah tercapai. */}
@@ -96,68 +95,76 @@ function DetailPerencanaan() {
           </section>
 
           {/* Kumpulan metrik utama dari detail perencanaan periode terpilih. */}
-          <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
-            <div className="bg-white rounded-2xl shadow-sm p-5">
-              <p className="text-sm text-gray-400 mb-2">Target Revenue</p>
-              <p className="text-2xl font-bold">
-                {formatRupiah(dataDetail?.data?.target_revenue ?? 0)}
-              </p>
-            </div>
+          {isLoading ? (
+            <CircularProgress></CircularProgress>
+          ) : (
+            <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+              <div className="bg-white rounded-2xl shadow-sm p-5">
+                <p className="text-sm text-gray-400 mb-2">Target Revenue</p>
+                <p className="text-2xl font-bold">
+                  {formatRupiah(dataDetail?.data?.target_revenue ?? 0)}
+                </p>
+              </div>
 
-            <div className="bg-white rounded-2xl shadow-sm p-5">
-              <p className="text-sm text-gray-400 mb-2">AOV</p>
-              <p className="text-2xl font-bold">
-                {formatRupiah(dataDetail?.data?.aov ?? 0)}
-              </p>
-            </div>
+              <div className="bg-white rounded-2xl shadow-sm p-5">
+                <p className="text-sm text-gray-400 mb-2">AOV</p>
+                <p className="text-2xl font-bold">
+                  {formatRupiah(dataDetail?.data?.aov ?? 0)}
+                </p>
+              </div>
 
-            <div className="bg-white rounded-2xl shadow-sm p-5">
-              <p className="text-sm text-gray-400 mb-2">Conversion Rate</p>
-              <p className="text-2xl font-bold">
-                {dataDetail?.data?.conversion_rate ?? 0}%
-              </p>
-            </div>
+              <div className="bg-white rounded-2xl shadow-sm p-5">
+                <p className="text-sm text-gray-400 mb-2">Conversion Rate</p>
+                <p className="text-2xl font-bold">
+                  {dataDetail?.data?.conversion_rate ?? 0}%
+                </p>
+              </div>
 
-            <div className="bg-white rounded-2xl shadow-sm p-5">
-              <p className="text-sm text-gray-400 mb-2">Cost per Lead</p>
-              <p className="text-2xl font-bold">
-                {formatRupiah(dataDetail?.data?.cost_per_lead ?? 0)}
-              </p>
-            </div>
+              <div className="bg-white rounded-2xl shadow-sm p-5">
+                <p className="text-sm text-gray-400 mb-2">Cost per Lead</p>
+                <p className="text-2xl font-bold">
+                  {formatRupiah(dataDetail?.data?.cost_per_lead ?? 0)}
+                </p>
+              </div>
 
-            <div className="bg-white rounded-2xl shadow-sm p-5">
-              <p className="text-sm text-gray-400 mb-2">Total Biaya</p>
-              <p className="text-2xl font-bold">
-                {formatRupiah(dataDetail?.data?.total_biaya_op ?? 0)}
-              </p>
-            </div>
+              <div className="bg-white rounded-2xl shadow-sm p-5">
+                <p className="text-sm text-gray-400 mb-2">Total Biaya</p>
+                <p className="text-2xl font-bold">
+                  {formatRupiah(dataDetail?.data?.total_biaya_op ?? 0)}
+                </p>
+              </div>
 
-            <div className="bg-white rounded-2xl shadow-sm p-5">
-              <p className="text-sm text-gray-400 mb-2">Estimasi Status</p>
-              {/* Warna teks status membantu user membedakan kondisi tercapai dan belum tercapai. */}
-              <p
-                className={`text-2xl font-bold ${
-                  forecast === "Tercapai" ? "text-green-600" : "text-red-500"
-                }`}
-              >
-                {forecast}
-              </p>
-            </div>
-          </section>
-
+              <div className="bg-white rounded-2xl shadow-sm p-5">
+                <p className="text-sm text-gray-400 mb-2">Estimasi Status</p>
+                {/* Warna teks status membantu user membedakan kondisi tercapai dan belum tercapai. */}
+                <p
+                  className={`text-2xl font-bold ${
+                    forecast === "Tercapai" ? "text-green-600" : "text-red-500"
+                  }`}
+                >
+                  {forecast}
+                </p>
+              </div>
+            </section>
+          )}
           {/* Ringkasan naratif dari semua metrik agar detail mudah dibaca sekaligus. */}
-          <section className="bg-white rounded-2xl shadow-sm p-6">
-            <h2 className="text-lg font-bold mb-2">Ringkasan</h2>
-            <p className="text-sm text-gray-500 leading-relaxed">
-              Perencanaan periode {periode} memiliki target revenue sebesar{" "}
-              {formatRupiah(dataDetail?.data?.target_revenue ?? 0)}, dengan AOV
-              sebesar {formatRupiah(dataDetail?.data?.aov ?? 0)}, conversion
-              rate {dataDetail?.data?.conversion_rate ?? 0}%, dan total biaya
-              {formatRupiah(dataDetail?.data?.total_biaya_op ?? 0)}. Status saat
-              ini adalah{" "}
-              <span className="font-semibold text-black">{forecast}</span>.
-            </p>
-          </section>
+          {isLoading ? (
+            <CircularProgress></CircularProgress>
+          ) : (
+            <section className="bg-white rounded-2xl shadow-sm p-6">
+              <h2 className="text-lg font-bold mb-2">Ringkasan</h2>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                Perencanaan periode {periode} memiliki target revenue sebesar{" "}
+                {formatRupiah(dataDetail?.data?.target_revenue ?? 0)}, dengan
+                AOV sebesar {formatRupiah(dataDetail?.data?.aov ?? 0)},
+                conversion rate {dataDetail?.data?.conversion_rate ?? 0}%, dan
+                total biaya
+                {formatRupiah(dataDetail?.data?.total_biaya_op ?? 0)}. Status
+                saat ini adalah{" "}
+                <span className="font-semibold text-black">{forecast}</span>.
+              </p>
+            </section>
+          )}
         </div>
       </main>
     </div>

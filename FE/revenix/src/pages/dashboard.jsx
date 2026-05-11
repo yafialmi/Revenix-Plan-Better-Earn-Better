@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Sidebar from "./sidebar";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   BarChart,
   Bar,
@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import { fetchDataDashboard } from "../services/dashboard/dashboardServices";
 import toast from "react-hot-toast";
+import { CircularProgress } from "@mui/material";
 
 // Mengubah angka mentah menjadi format mata uang Rupiah agar konsisten di seluruh UI.
 function formatRupiah(value) {
@@ -32,22 +33,26 @@ function CardSummary({ title, value, subtitle }) {
 
 function Dashboard() {
   const [dataDashboard, setDataDashboard] = useState(null);
-  const [loading, setLoading] = useState(null);
+  const [isLoading, setLoading] = useState(false);
   const username = localStorage.getItem("username");
+  const location = useLocation();
+  const navigate = useNavigate();
+
   useEffect(() => {
     const getDashboard = async () => {
       try {
+        setLoading(true);
         const data = await fetchDataDashboard();
         setDataDashboard(data);
-      } catch (error) {
-        toast.error(`${error.message || error || error.detail}`);
+      } catch (e) {
+        toast.e(`${e.message || e.detail}`);
+      } finally {
+        setLoading(false);
       }
     };
 
     getDashboard();
-  }, []);
-
-  const navigate = useNavigate();
+  }, [location.key]);
 
   const calculateForecast = (data) => {
     const customer = data.target_revenue / data.aov;
@@ -106,28 +111,46 @@ function Dashboard() {
         <div className="mb-4 grid grid-cols-4 gap-4 shrink-0">
           <CardSummary
             title="Total Perencanaan"
-            value={dataDashboard?.summary?.total_perencanaan}
+            value={
+              isLoading ? (
+                <CircularProgress />
+              ) : (
+                dataDashboard?.summary?.total_perencanaan
+              )
+            }
             subtitle="Total Semua Perencanaan"
           />
           <CardSummary
             title="Total Target Revenue"
-            value={formatRupiah(
-              dataDashboard?.summary?.total_target_revenue ?? 0,
-            )}
+            value={
+              isLoading ? (
+                <CircularProgress />
+              ) : (
+                formatRupiah(dataDashboard?.summary?.total_target_revenue ?? 0)
+              )
+            }
             subtitle="Akumulasi semua periode"
           />
           <CardSummary
             title="Estimasi Pengeluaran"
-            value={formatRupiah(
-              dataDashboard?.summary?.estimasi_pengeluaran ?? 0,
-            )}
+            value={
+              isLoading ? (
+                <CircularProgress />
+              ) : (
+                formatRupiah(dataDashboard?.summary?.estimasi_pengeluaran ?? 0)
+              )
+            }
             subtitle="Total semua periode"
           />
           <CardSummary
             title="Estimasi Laba/Rugi"
-            value={formatRupiah(
-              dataDashboard?.summary?.estimasi_laba_rugi ?? 0,
-            )}
+            value={
+              isLoading ? (
+                <CircularProgress />
+              ) : (
+                formatRupiah(dataDashboard?.summary?.estimasi_laba_rugi ?? 0)
+              )
+            }
             subtitle="Total semua periode"
           />
         </div>
@@ -141,58 +164,66 @@ function Dashboard() {
               </h2>
 
               <div className="space-y-2 overflow-y-auto pr-2 min-h-0">
-                {dataDashboard?.perencanaan_terbaru?.map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between rounded-lg border px-4 py-3"
-                  >
-                    <div>
-                      <p className="text-sm font-semibold">{item.periode}</p>
-                      <p className="text-xs text-gray-500">
-                        Target: {formatRupiah(item.target_revenue)}
-                      </p>
-                    </div>
-
-                    {/* Warna status dibedakan agar kondisi target mudah dipindai. */}
-                    <span
-                      className={`text-xs font-semibold ${
-                        calculateForecast(item).status === "Tercapai" // ← tambah .status
-                          ? "text-green-600"
-                          : "text-red-500"
-                      }`}
+                {isLoading ? (
+                  <CircularProgress></CircularProgress>
+                ) : (
+                  dataDashboard?.perencanaan_terbaru?.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between rounded-lg border px-4 py-3"
                     >
-                      {calculateForecast(item).status} {/* ← tambah .status */}
-                    </span>
-                  </div>
-                ))}
+                      <div>
+                        <p className="text-sm font-semibold">{item.periode}</p>
+                        <p className="text-xs text-gray-500">
+                          Target: {formatRupiah(item.target_revenue)}
+                        </p>
+                      </div>
+
+                      {/* Warna status dibedakan agar kondisi target mudah dipindai. */}
+                      <span
+                        className={`text-xs font-semibold ${
+                          calculateForecast(item).status === "Tercapai" // ← tambah .status
+                            ? "text-green-600"
+                            : "text-red-500"
+                        }`}
+                      >
+                        {calculateForecast(item).status}{" "}
+                        {/* ← tambah .status */}
+                      </span>
+                    </div>
+                  ))
+                )}
               </div>
             </section>
 
             {/* Status perencanaan merangkum jumlah periode yang tercapai dan belum tercapai. */}
             <section className="rounded-xl border bg-white p-4 shadow-sm flex flex-col">
               <h2 className="text-sm font-bold mb-3">Status Perencanaan</h2>
-
-              <div className="flex gap-4">
-                <div className="flex-1 flex items-center justify-between border rounded-lg px-4 py-3">
-                  <div>
-                    <p className="text-xs text-gray-500">Tercapai</p>
-                    <p className="text-lg font-bold text-green-600">
-                      {totalTercapai}
-                    </p>
+              {isLoading ? (
+                <CircularProgress></CircularProgress>
+              ) : (
+                <div className="flex gap-4">
+                  <div className="flex-1 flex items-center justify-between border rounded-lg px-4 py-3">
+                    <div>
+                      <p className="text-xs text-gray-500">Tercapai</p>
+                      <p className="text-lg font-bold text-green-600">
+                        {totalTercapai}
+                      </p>
+                    </div>
+                    <span className="text-xs text-gray-400">periode</span>
                   </div>
-                  <span className="text-xs text-gray-400">periode</span>
-                </div>
 
-                <div className="flex-1 flex items-center justify-between border rounded-lg px-4 py-3">
-                  <div>
-                    <p className="text-xs text-gray-500">Belum</p>
-                    <p className="text-lg font-bold text-red-500">
-                      {totalBelumTercapai}
-                    </p>
+                  <div className="flex-1 flex items-center justify-between border rounded-lg px-4 py-3">
+                    <div>
+                      <p className="text-xs text-gray-500">Belum</p>
+                      <p className="text-lg font-bold text-red-500">
+                        {totalBelumTercapai}
+                      </p>
+                    </div>
+                    <span className="text-xs text-gray-400">periode</span>
                   </div>
-                  <span className="text-xs text-gray-400">periode</span>
                 </div>
-              </div>
+              )}
 
               <p className="mt-3 text-xs text-gray-500">
                 {totalTercapai} dari{" "}
@@ -214,33 +245,37 @@ function Dashboard() {
             </div>
 
             <div className="flex-1 min-h-0">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={dataDashboard?.perencanaan_terbaru}
-                  margin={{ top: 10, right: 20, left: 0, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="periode" tick={{ fontSize: 12 }} />
-                  <YAxis
-                    tick={{ fontSize: 12 }}
-                    tickFormatter={(value) => `${value / 1000000}jt`}
-                  />
-                  <Tooltip formatter={(value) => formatRupiah(value)} />
-                  <Legend />
-                  <Bar
-                    dataKey="target_revenue"
-                    name="Target Revenue"
-                    fill="#2563eb"
-                    radius={[6, 6, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="total_biaya_op"
-                    name="Total Biaya Operasional"
-                    fill="#f97316"
-                    radius={[6, 6, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
+              {isLoading ? (
+                <CircularProgress></CircularProgress>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={dataDashboard?.perencanaan_terbaru}
+                    margin={{ top: 10, right: 20, left: 0, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="periode" tick={{ fontSize: 12 }} />
+                    <YAxis
+                      tick={{ fontSize: 12 }}
+                      tickFormatter={(value) => `${value / 1000000}jt`}
+                    />
+                    <Tooltip formatter={(value) => formatRupiah(value)} />
+                    <Legend />
+                    <Bar
+                      dataKey="target_revenue"
+                      name="Target Revenue"
+                      fill="#2563eb"
+                      radius={[6, 6, 0, 0]}
+                    />
+                    <Bar
+                      dataKey="total_biaya_op"
+                      name="Total Biaya Operasional"
+                      fill="#f97316"
+                      radius={[6, 6, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
             </div>
           </section>
         </div>

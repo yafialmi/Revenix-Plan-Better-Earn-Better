@@ -1,18 +1,32 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./sidebar";
-
-// Data dummy tahun perencanaan yang ditampilkan pada daftar.
-const dummyData = [
-  { id: 1, tahun: "2024" },
-  { id: 2, tahun: "2025" },
-  { id: 3, tahun: "2026" },
-  { id: 4, tahun: "2027" },
-  { id: 5, tahun: "2028" },
-  { id: 6, tahun: "2029" },
-];
+import { useEffect, useState } from "react";
+import { fetchDataPerencanaan } from "../services/perencanaan/perencanaan_services";
+import toast from "react-hot-toast";
+import { CircularProgress } from "@mui/material";
 
 function Perencanaan() {
   const navigate = useNavigate();
+  const [data, setData] = useState(null);
+  const [isLoading, setLoading] = useState(false);
+  const username = localStorage.getItem("username");
+  const location = useLocation();
+  // Request GET Handler
+  useEffect(() => {
+    const getPerencanaan = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchDataPerencanaan();
+        setData(data);
+      } catch (e) {
+        toast.error(`${e.message || e.detail}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getPerencanaan();
+  }, [location.key]);
 
   return (
     <div className="h-screen flex bg-gradient-to-br from-[#f5f4ff] to-[#eef5fb] overflow-hidden font-poppins">
@@ -21,7 +35,9 @@ function Perencanaan() {
       <main className="flex-1 min-w-0 p-6 flex flex-col overflow-hidden">
         <div className="mb-4">
           <h1 className="text-3xl font-bold font-poppins mb-1">Perencanaan</h1>
-          <p className="mt-1 text-sm text-gray-600">Selamat datang, User</p>
+          <p className="mt-1 text-sm text-gray-600">
+            Selamat datang, {username}
+          </p>
         </div>
 
         {/* Area pencarian disiapkan untuk memfilter daftar perencanaan berdasarkan tahun. */}
@@ -56,21 +72,23 @@ function Perencanaan() {
 
           <div className="flex-1 overflow-y-auto pr-2 min-h-0">
             {/* Empty state ditampilkan jika tidak ada data perencanaan yang tersedia. */}
-            {dummyData.length === 0 ? (
+            {isLoading ? (
+              <CircularProgress />
+            ) : data?.data.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-gray-400">
                 <p className="text-sm">Tidak ada data yang ditemukan</p>
               </div>
             ) : (
               <div className="space-y-3">
                 {/* Setiap item tahun ditampilkan sebagai kartu dengan tombol menuju halaman detail. */}
-                {dummyData.map((item) => (
+                {data?.data?.map((item, index) => (
                   <div
-                    key={item.id}
+                    key={index}
                     className="border border-gray-200 rounded-xl px-5 py-4 bg-white shadow-sm hover:shadow-md transition flex items-center justify-between"
                   >
                     <div>
                       <h3 className="font-bold text-base">
-                        Perencanaan Tahun {item.tahun}
+                        Perencanaan Tahun {item.periode}
                       </h3>
                       <p className="text-sm text-gray-500">
                         Klik detail untuk melihat data perencanaan
@@ -80,7 +98,12 @@ function Perencanaan() {
                     <button
                       // Navigasi ke halaman detail sesuai tahun yang dipilih.
                       onClick={() =>
-                        navigate(`/detail-perencanaan/${item.tahun}`)
+                        navigate(`/detail-perencanaan/${item.periode}`, {
+                          state: {
+                            periode: item.periode,
+                            id_perencanaan: item.input_id,
+                          },
+                        })
                       }
                       className="text-sm text-blue-500 font-semibold hover:underline"
                     >

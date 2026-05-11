@@ -171,7 +171,12 @@ function Laporan() {
                         <button
                           // Navigasi menuju detail perencanaan berdasarkan periode yang dipilih.
                           onClick={() =>
-                            navigate(`/detail-perencanaan/${item.periode}`)
+                            navigate(`/detail-perencanaan/${item.periode}`, {
+                              state: {
+                                periode: item.periode,
+                                id_perencanaan: item.input_id,
+                              },
+                            })
                           }
                           className="text-sm text-blue-500 font-semibold hover:underline"
                         >

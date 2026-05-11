@@ -48,7 +48,7 @@ function DetailPerencanaan() {
     const forecast = d.target_revenue - d.total_biaya_op - budget;
     console.log(forecast);
 
-    return forecast > 0 ? "Tercapai" : "Tidak Tercapai";
+    return forecast > 0 ? "Untung" : "Rugi";
   };
 
   return (
@@ -84,7 +84,7 @@ function DetailPerencanaan() {
               {/* Badge status memberi tanda visual apakah target periode sudah tercapai. */}
               <span
                 className={`px-4 py-2 rounded-full text-sm font-semibold w-fit ${
-                  forecast === "Tercapai"
+                  forecast === "Untung"
                     ? "bg-green-100 text-green-600"
                     : "bg-red-100 text-red-600"
                 }`}
@@ -139,7 +139,7 @@ function DetailPerencanaan() {
                 {/* Warna teks status membantu user membedakan kondisi tercapai dan belum tercapai. */}
                 <p
                   className={`text-2xl font-bold ${
-                    forecast === "Tercapai" ? "text-green-600" : "text-red-500"
+                    forecast === "Untung" ? "text-green-600" : "text-red-500"
                   }`}
                 >
                   {forecast}

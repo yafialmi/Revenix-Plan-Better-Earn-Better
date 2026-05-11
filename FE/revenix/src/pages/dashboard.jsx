@@ -34,7 +34,6 @@ function CardSummary({ title, value, subtitle }) {
 function Dashboard() {
   const [dataDashboard, setDataDashboard] = useState(null);
   const [isLoading, setLoading] = useState(false);
-  const username = localStorage.getItem("username");
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -64,20 +63,20 @@ function Dashboard() {
     const forecast = data.target_revenue - data.total_biaya_op - budget;
 
     return {
-      status: forecast > 0 ? "Tercapai" : "Tidak Tercapai",
+      status: forecast > 0 ? "Untung" : "Rugi",
     };
   };
 
   // Menghitung jumlah periode yang sudah memenuhi target revenue.
   const totalTercapai =
     dataDashboard?.perencanaan_terbaru?.filter(
-      (item) => calculateForecast(item).status === "Tercapai",
+      (item) => calculateForecast(item).status === "Untung",
     ).length ?? 0;
 
   // Menghitung jumlah periode yang belum memenuhi target revenue.
   const totalBelumTercapai =
     dataDashboard?.perencanaan_terbaru?.filter(
-      (item) => calculateForecast(item).status === "Tidak Tercapai",
+      (item) => calculateForecast(item).status === "Rugi",
     ).length ?? 0;
 
   return (
@@ -89,7 +88,7 @@ function Dashboard() {
           <div>
             <h1 className="text-3xl font-bold">Dashboard</h1>
             <p className="mt-1 text-sm text-gray-600">
-              Selamat datang, {username}
+              Selamat datang, {localStorage.getItem("username")}
             </p>
           </div>
 
@@ -182,13 +181,12 @@ function Dashboard() {
                       {/* Warna status dibedakan agar kondisi target mudah dipindai. */}
                       <span
                         className={`text-xs font-semibold ${
-                          calculateForecast(item).status === "Tercapai" // ← tambah .status
+                          calculateForecast(item).status === "Untung" //
                             ? "text-green-600"
                             : "text-red-500"
                         }`}
                       >
                         {calculateForecast(item).status}{" "}
-                        {/* ← tambah .status */}
                       </span>
                     </div>
                   ))

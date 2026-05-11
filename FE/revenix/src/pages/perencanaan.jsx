@@ -9,7 +9,6 @@ function Perencanaan() {
   const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [isLoading, setLoading] = useState(false);
-  const username = localStorage.getItem("username");
   const location = useLocation();
   // Request GET Handler
   useEffect(() => {
@@ -36,7 +35,7 @@ function Perencanaan() {
         <div className="mb-4">
           <h1 className="text-3xl font-bold font-poppins mb-1">Perencanaan</h1>
           <p className="mt-1 text-sm text-gray-600">
-            Selamat datang, {username}
+            Selamat datang, {localStorage.getItem("username")}
           </p>
         </div>
 
@@ -53,7 +52,7 @@ function Perencanaan() {
               />
             </div>
 
-            <button className="px-5 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-700 hover:bg-red-500 hover:text-white transition duration-300">
+            <button className="cursor-pointer px-5 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-700 hover:bg-red-500 hover:text-white transition duration-300">
               Reset
             </button>
           </div>

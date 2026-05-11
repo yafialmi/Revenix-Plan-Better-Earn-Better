@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Sidebar from "./sidebar";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   BarChart,
   Bar,
@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import { fetchDataDashboard } from "../services/dashboard/dashboardServices";
 import toast from "react-hot-toast";
+import { CircularProgress } from "@mui/material";
 
 // Mengubah angka mentah menjadi format mata uang Rupiah agar konsisten di seluruh UI.
 function formatRupiah(value) {
@@ -32,22 +33,26 @@ function CardSummary({ title, value, subtitle }) {
 
 function Dashboard() {
   const [dataDashboard, setDataDashboard] = useState(null);
-  const [loading, setLoading] = useState(null);
+  const [isLoading, setLoading] = useState(false);
   const username = localStorage.getItem("username");
+  const location = useLocation();
+  const navigate = useNavigate();
+
   useEffect(() => {
     const getDashboard = async () => {
       try {
+        setLoading(true);
         const data = await fetchDataDashboard();
         setDataDashboard(data);
-      } catch (error) {
-        toast.error(`${error.message || error || error.detail}`);
+      } catch (e) {
+        toast.e(`${e.message || e.detail}`);
+      } finally {
+        setLoading(false);
       }
     };
 
     getDashboard();
-  }, []);
-
-  const navigate = useNavigate();
+  }, [location.key]);
 
   const calculateForecast = (data) => {
     const customer = data.target_revenue / data.aov;
@@ -106,28 +111,46 @@ function Dashboard() {
         <div className="mb-4 grid grid-cols-4 gap-4 shrink-0">
           <CardSummary
             title="Total Perencanaan"
-            value={dataDashboard?.summary?.total_perencanaan}
+            value={
+              isLoading ? (
+                <CircularProgress />
+              ) : (
+                dataDashboard?.summary?.total_perencanaan
+              )
+            }
             subtitle="Total Semua Perencanaan"
           />
           <CardSummary
             title="Total Target Revenue"
-            value={formatRupiah(
-              dataDashboard?.summary?.total_target_revenue ?? 0,
-            )}
+            value={
+              isLoading ? (
+                <CircularProgress />
+              ) : (
+                formatRupiah(dataDashboard?.summary?.total_target_revenue ?? 0)
+              )
+            }
             subtitle="Akumulasi semua periode"
           />
           <CardSummary
             title="Estimasi Pengeluaran"
-            value={formatRupiah(
-              dataDashboard?.summary?.estimasi_pengeluaran ?? 0,
-            )}
+            value={
+              isLoading ? (
+                <CircularProgress />
+              ) : (
+                formatRupiah(dataDashboard?.summary?.estimasi_pengeluaran ?? 0)
+              )
+            }
             subtitle="Total semua periode"
           />
           <CardSummary
             title="Estimasi Laba/Rugi"
-            value={formatRupiah(
-              dataDashboard?.summary?.estimasi_laba_rugi ?? 0,
-            )}
+            value={
+              isLoading ? (
+                <CircularProgress />
+              ) : (
+                formatRupiah(dataDashboard?.summary?.estimasi_laba_rugi ?? 0)
+              )
+            }
             subtitle="Total semua periode"
           />
         </div>

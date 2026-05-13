@@ -4,7 +4,7 @@ import requests
 
 router = APIRouter()
 
-FIREBASE_API_KEY = "AIzaSyARSJMsU8l0CtyDqHiv2GOU1nQmQWgUaz8"
+FIREBASE_API_KEY = ""
 
 class LoginRequest(BaseModel):
     email: str

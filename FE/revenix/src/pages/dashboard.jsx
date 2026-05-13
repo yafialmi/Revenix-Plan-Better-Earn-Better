@@ -80,7 +80,7 @@ function Dashboard() {
     ).length ?? 0;
 
   return (
-    <div className="h-screen flex bg-gradient-to-br from-gray-100 to-blue-100 font-poppins overflow-hidden">
+    <div className="h-screen flex bg-linear-to-br from-gray-100 to-blue-100 font-poppins overflow-hidden">
       <Sidebar />
 
       <main className="flex-1 min-w-0 p-6 flex flex-col overflow-hidden">
@@ -242,7 +242,7 @@ function Dashboard() {
               </p>
             </div>
 
-            <div className="flex-1 min-h-0">
+            <div className="flex-1 min-h-0 h-80">
               {isLoading ? (
                 <CircularProgress></CircularProgress>
               ) : (

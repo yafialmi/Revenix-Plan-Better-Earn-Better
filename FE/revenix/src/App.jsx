@@ -9,6 +9,8 @@ import KonfirmasiPerencanaan from "./pages/konfirmasiPerencanaan";
 import ProtectedRoute from "./components/protected_routes";
 import DashboardAdm from "./pages/dashboardAdm";
 import DetailPerencanaan from "./pages/detailPerencanaan";
+import DetailLaporan from "./pages/detailLaporan";
+import ScenarioPlanning from "./pages/ScenarioPlanning";
 
 function App() {
   return (
@@ -104,6 +106,22 @@ function App() {
           element={
             <ProtectedRoute>
               <DetailPerencanaan />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ScenarioPlanning"
+          element={
+            <ProtectedRoute>
+              <ScenarioPlanning />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/detail-laporan/:tahun"
+          element={
+            <ProtectedRoute>
+              <DetailLaporan />
             </ProtectedRoute>
           }
         />

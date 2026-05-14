@@ -1,8 +1,6 @@
 import { axiosInstanceAuthenticated } from "../../api/axiosInstance";
 
-// =====================================
 // GET ALL PENDING
-// =====================================
 
 export const fetchPersetujuan =
   async () => {
@@ -18,10 +16,7 @@ export const fetchPersetujuan =
     }
   };
 
-// =====================================
 // APPROVE
-// =====================================
-
 export const approvePersetujuan =
   async (hasil_id) => {
     try {
@@ -36,10 +31,8 @@ export const approvePersetujuan =
     }
   };
 
-// =====================================
-// REJECT
-// =====================================
 
+// REJECT
 export const rejectPersetujuan =
   async (hasil_id) => {
     try {

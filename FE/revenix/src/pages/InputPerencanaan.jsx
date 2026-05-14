@@ -35,7 +35,7 @@ export default function InputPerencanaan() {
     <div className="h-screen w-full flex bg-[#f5f7fb] overflow-hidden font-poppins">
       <Sidebar />
 
-      <main className="flex-1 min-w-0 px-10 py-10 bg-gradient-to-br from-[#f7f8fc] to-[#eeeffc] overflow-hidden">
+      <main className="flex-1 min-w-0 px-10 py-10 bg-linear-to-br from-[#f7f8fc] to-[#eeeffc] overflow-hidden">
         {" "}
         <div className="h-full">
           <h1 className="text-4xl font-bold text-black mb-10">

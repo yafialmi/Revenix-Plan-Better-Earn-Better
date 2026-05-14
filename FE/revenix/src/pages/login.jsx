@@ -75,7 +75,7 @@ function Login() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-[34px] text-gray-500 hover:text-blue-600 transition duration-200"
+                className="absolute right-3 top-8.5 text-gray-500 hover:text-blue-600 transition duration-200"
               >
                 {showPassword ? (
                   // Eye-off icon (hide password)

@@ -28,7 +28,7 @@ function Perencanaan() {
   }, [location.key]);
 
   return (
-    <div className="h-screen flex bg-gradient-to-br from-[#f5f4ff] to-[#eef5fb] overflow-hidden font-poppins">
+    <div className="h-screen flex bg-linear-to-br from-[#f5f4ff] to-[#eef5fb] overflow-hidden font-poppins">
       <Sidebar />
 
       <main className="flex-1 min-w-0 p-6 flex flex-col overflow-hidden">
@@ -73,7 +73,7 @@ function Perencanaan() {
             {/* Empty state ditampilkan jika tidak ada data perencanaan yang tersedia. */}
             {isLoading ? (
               <CircularProgress />
-            ) : data?.data.length === 0 ? (
+            ) : data?.data?.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-gray-400">
                 <p className="text-sm">Tidak ada data yang ditemukan</p>
               </div>

@@ -46,7 +46,7 @@ function Laporan() {
   }
 
   return (
-    <div className="h-screen flex bg-gradient-to-br from-[#f5f4ff] to-[#eef5fb] font-poppins overflow-hidden">
+    <div className="h-screen flex bg-linear-to-br from-[#f5f4ff] to-[#eef5fb] font-poppins overflow-hidden">
       <Sidebar />
 
       <main className="flex-1 min-w-0 p-6 flex flex-col overflow-hidden">
@@ -143,7 +143,7 @@ function Laporan() {
 
           <div className="flex-1 overflow-y-auto pr-2 min-h-0">
             {/* Empty state muncul ketika belum ada data laporan. */}
-            {dataLaporan?.detail_laporan.length === 0 ? (
+            {dataLaporan?.detail_laporan?.length === 0 ? (
               <div className="h-full flex items-center justify-center text-gray-400">
                 <p className="text-sm">Tidak ada data yang ditemukan</p>
               </div>
@@ -153,7 +153,7 @@ function Laporan() {
                 {isLoading ? (
                   <CircularProgress></CircularProgress>
                 ) : (
-                  dataLaporan?.detail_laporan.map((item, index) => (
+                  dataLaporan?.detail_laporan?.map((item, index) => (
                     <div
                       key={index}
                       className="border border-gray-200 rounded-xl p-5 bg-white shadow-sm hover:shadow-md transition"

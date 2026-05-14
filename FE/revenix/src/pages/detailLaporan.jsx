@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { fetchDataPerencaanDetail } from "../services/perencanaan/perencanaan_services";
 import toast from "react-hot-toast";
 import { CircularProgress } from "@mui/material";
+import { fetchDataLaporanDetail } from "../services/laporan/laporan_services";
+import { ArrowLeft } from "lucide-react";
 
 function DetailLaporan() {
   const navigate = useNavigate();
@@ -11,45 +13,27 @@ function DetailLaporan() {
   const [dataDetail, setDataDetail] = useState(null);
   const [isLoading, setLoading] = useState(false);
   // Parameter route digunakan untuk menentukan periode/tahun yang sedang dibuka.
-  const { periode, id_perencanaan } = location.state;
-  // Request GET Handler, paramnya menggunakan id_perencanaan
-  const [forecast, setForecast] = useState(null);
+  const { periode, id_laporan } = location.state;
+  // Request GET Handler, paramnya menggunakan id_laporan
   useEffect(() => {
-    const getDetailPerencanaan = async () => {
+    const getDetailLaporan = async () => {
       try {
         setLoading(true);
-        const data = await fetchDataPerencaanDetail(id_perencanaan);
+        const data = await fetchDataLaporanDetail(id_laporan);
         setDataDetail(data);
-        setForecast(calculateForecast(data.data));
       } catch (e) {
         toast.error(`${e.message || e.detail}`);
       } finally {
         setLoading(false);
       }
     };
-    getDetailPerencanaan();
+    getDetailLaporan();
   }, [location.key]);
 
   // Mengubah angka mentah menjadi format mata uang Rupiah agar konsisten di seluruh UI.
   function formatRupiah(value) {
     return `Rp ${value.toLocaleString("id-ID")}`;
   }
-
-  const calculateForecast = (d) => {
-    console.log({
-      d,
-    });
-    const customer = d.target_revenue / d.aov;
-
-    const leads = customer / (d.conversion_rate / 100);
-
-    const budget = leads * d.cost_per_lead;
-
-    const forecast = d.target_revenue - d.total_biaya_op - budget;
-    console.log(forecast);
-
-    return forecast > 0 ? "Untung" : "Rugi";
-  };
 
   return (
     <div className="h-screen flex bg-linear-to-br from-[#f5f4ff] to-[#eef5fb] font-poppins overflow-hidden">
@@ -66,10 +50,10 @@ function DetailLaporan() {
             </div>
 
             <button
-              // Mengembalikan user ke halaman sebelumnya.
               onClick={() => navigate(-1)}
-              className="px-5 py-2 border border-gray-300 rounded-xl text-sm hover:bg-white transition"
+              className="flex items-center gap-2 px-5 py-2 border border-gray-300 rounded-xl text-sm hover:bg-white transition cursor-pointer"
             >
+              <ArrowLeft size={18} />
               Kembali
             </button>
           </div>
@@ -84,12 +68,12 @@ function DetailLaporan() {
               {/* Badge status memberi tanda visual apakah target periode sudah tercapai. */}
               <span
                 className={`px-4 py-2 rounded-full text-sm font-semibold w-fit ${
-                  forecast === "Untung"
+                  dataDetail?.data?.forecast?.status === "Untung"
                     ? "bg-green-100 text-green-600"
                     : "bg-red-100 text-red-600"
                 }`}
               >
-                {forecast}
+                {dataDetail?.data?.forecast?.status ?? ""}
               </span>
             </div>
           </section>
@@ -102,35 +86,41 @@ function DetailLaporan() {
               <div className="bg-white rounded-2xl shadow-sm p-5">
                 <p className="text-sm text-gray-400 mb-2">Target Revenue</p>
                 <p className="text-2xl font-bold">
-                  {formatRupiah(dataDetail?.data?.target_revenue ?? 0)}
+                  {formatRupiah(
+                    dataDetail?.data?.parameter?.target_revenue ?? 0,
+                  )}
                 </p>
               </div>
 
               <div className="bg-white rounded-2xl shadow-sm p-5">
                 <p className="text-sm text-gray-400 mb-2">AOV</p>
                 <p className="text-2xl font-bold">
-                  {formatRupiah(dataDetail?.data?.aov ?? 0)}
+                  {formatRupiah(dataDetail?.data?.parameter?.aov ?? 0)}
                 </p>
               </div>
 
               <div className="bg-white rounded-2xl shadow-sm p-5">
                 <p className="text-sm text-gray-400 mb-2">Conversion Rate</p>
                 <p className="text-2xl font-bold">
-                  {dataDetail?.data?.conversion_rate ?? 0}%
+                  {dataDetail?.data?.parameter?.conversion_rate ?? 0}%
                 </p>
               </div>
 
               <div className="bg-white rounded-2xl shadow-sm p-5">
                 <p className="text-sm text-gray-400 mb-2">Cost per Lead</p>
                 <p className="text-2xl font-bold">
-                  {formatRupiah(dataDetail?.data?.cost_per_lead ?? 0)}
+                  {formatRupiah(
+                    dataDetail?.data?.parameter?.cost_per_lead ?? 0,
+                  )}
                 </p>
               </div>
 
               <div className="bg-white rounded-2xl shadow-sm p-5">
                 <p className="text-sm text-gray-400 mb-2">Total Biaya</p>
                 <p className="text-2xl font-bold">
-                  {formatRupiah(dataDetail?.data?.total_biaya_op ?? 0)}
+                  {formatRupiah(
+                    dataDetail?.data?.parameter?.total_biaya_op ?? 0,
+                  )}
                 </p>
               </div>
 
@@ -139,10 +129,12 @@ function DetailLaporan() {
                 {/* Warna teks status membantu user membedakan kondisi tercapai dan belum tercapai. */}
                 <p
                   className={`text-2xl font-bold ${
-                    forecast === "Untung" ? "text-green-600" : "text-red-500"
+                    dataDetail?.data?.forecast?.status === "Untung"
+                      ? "text-green-600"
+                      : "text-red-500"
                   }`}
                 >
-                  {forecast}
+                  {dataDetail?.data?.forecast?.status ?? ""}
                 </p>
               </div>
             </section>
@@ -155,13 +147,17 @@ function DetailLaporan() {
               <h2 className="text-lg font-bold mb-2">Ringkasan</h2>
               <p className="text-sm text-gray-500 leading-relaxed">
                 Perencanaan periode {periode} memiliki target revenue sebesar{" "}
-                {formatRupiah(dataDetail?.data?.target_revenue ?? 0)}, dengan
-                AOV sebesar {formatRupiah(dataDetail?.data?.aov ?? 0)},
-                conversion rate {dataDetail?.data?.conversion_rate ?? 0}%, dan
-                total biaya
-                {formatRupiah(dataDetail?.data?.total_biaya_op ?? 0)}. Status
-                saat ini adalah{" "}
-                <span className="font-semibold text-black">{forecast}</span>.
+                {formatRupiah(dataDetail?.data?.parameter?.target_revenue ?? 0)}
+                , dengan AOV sebesar {formatRupiah(dataDetail?.data?.aov ?? 0)},
+                conversion rate{" "}
+                {dataDetail?.data?.parameter?.conversion_rate ?? 0}%, dan total
+                biaya
+                {formatRupiah(dataDetail?.data?.parameter?.total_biaya_op ?? 0)}
+                . Status saat ini adalah{" "}
+                <span className="font-semibold text-black">
+                  {dataDetail?.data?.forecast?.status ?? ""}
+                </span>
+                .
               </p>
             </section>
           )}
@@ -169,8 +165,16 @@ function DetailLaporan() {
           {/* Button menuju Scenario Planning */}
           <div className="mt-6 flex justify-end">
             <button
-              onClick={() => navigate("/ScenarioPlanning", { state: { id_perencanaan, periode } })}
-              className="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 transition duration-300 shadow-sm"
+              onClick={() =>
+                navigate("/ScenarioPlanning", {
+                  state: {
+                    id_laporan: id_laporan,
+                    periode: periode,
+                    data: dataDetail,
+                  },
+                })
+              }
+              className="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 transition duration-300 shadow-sm cursor-pointer"
             >
               Scenario dan Planning pada tahun {periode}
             </button>

@@ -3,6 +3,7 @@ import { useState } from "react";
 import Sidebar from "./sidebar";
 import { useNavigate } from "react-router-dom";
 import { postInputPerencanaan } from "../services/input_perencanaan/inputPerencanaanService";
+import { CircularProgress } from "@mui/material";
 
 export default function InputPerencanaan() {
   const [periode, setPeriode] = useState(0);
@@ -11,11 +12,13 @@ export default function InputPerencanaan() {
   const [conversion_rate, setConversionRate] = useState(0.0);
   const [cost_per_lead, setCostPerLead] = useState(0.0);
   const [total_biaya_op, setTotalBiayaOperasional] = useState(0.0);
+  const [isLoading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       const data = await postInputPerencanaan(
         parseInt(periode),
         parseFloat(target_revenue),
@@ -28,6 +31,8 @@ export default function InputPerencanaan() {
       navigate("/dashboard", { replace: true });
     } catch (error) {
       toast.error(`Input gagal! ${error.detail || error}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -156,7 +161,11 @@ export default function InputPerencanaan() {
                     d="M9 12h6m-6 4h6M7 4h6l4 4v12a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2z"
                   />
                 </svg>
-                Simpan Perencanaan
+                {isLoading ? (
+                  <CircularProgress></CircularProgress>
+                ) : (
+                  <p>Simpan Perencanaan</p>
+                )}
               </button>
             </form>
           </div>

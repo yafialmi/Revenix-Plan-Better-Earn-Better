@@ -278,7 +278,7 @@ function DetailPerencanaan() {
             onClick={() =>
               navigate(-1)
             }
-            className="flex items-center gap-2 px-5 py-2 border border-gray-300 rounded-xl text-sm hover:bg-white transition"
+            className="flex items-center gap-2 px-5 py-2 border border-gray-300 rounded-xl text-sm hover:bg-white transition cursor-pointer"
           >
             <ArrowLeft size={18} />
             Kembali

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Sidebar from "./sidebar";
-import { TrendingUp, Wallet, Users, Target } from "lucide-react";
+import { TrendingUp, Wallet, Users, Target, ArrowLeft } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function formatRupiah(value) {
   return new Intl.NumberFormat("id-ID", {
@@ -29,14 +30,18 @@ function ScenarioCard({ title, data, color }) {
     <div className="rounded-2xl border p-5 bg-white shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-bold">{title}</h3>
-        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${color}`}>
+        <span
+          className={`px-3 py-1 rounded-full text-xs font-semibold ${color}`}
+        >
           {data?.status}
         </span>
       </div>
       <div className="space-y-3 text-sm">
         <div className="flex justify-between">
           <span className="text-gray-500">Revenue</span>
-          <span className="font-semibold">{formatRupiah(data?.estimasi_revenue)}</span>
+          <span className="font-semibold">
+            {formatRupiah(data?.estimasi_revenue)}
+          </span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-500">Cash Flow</span>
@@ -44,7 +49,9 @@ function ScenarioCard({ title, data, color }) {
         </div>
         <div className="flex justify-between">
           <span className="text-gray-500">Budget Promosi</span>
-          <span className="font-semibold">{formatRupiah(data?.budget_promosi)}</span>
+          <span className="font-semibold">
+            {formatRupiah(data?.budget_promosi)}
+          </span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-500">Leads Dibutuhkan</span>
@@ -52,7 +59,9 @@ function ScenarioCard({ title, data, color }) {
         </div>
         <div className="flex justify-between">
           <span className="text-gray-500">Conversion Rate</span>
-          <span className="font-semibold">{data?.conversion_rate_digunakan}%</span>
+          <span className="font-semibold">
+            {data?.conversion_rate_digunakan}%
+          </span>
         </div>
       </div>
     </div>
@@ -60,21 +69,10 @@ function ScenarioCard({ title, data, color }) {
 }
 
 function ScenarioPlanning() {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("http://localhost:8000/dashboard")
-      .then((res) => res.json())
-      .then((result) => {
-        setData(result.detail_laporan || []);
-      })
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
-  }, []);
-
-  // Fix: optional chaining agar tidak crash kalau data kosong
-  const latestData = data?.[0];
+  const location = useLocation();
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { periode, id_laporan, data } = location.state;
 
   return (
     <div className="h-screen flex bg-linear-to-br from-gray-100 to-blue-100 overflow-hidden font-poppins">
@@ -88,6 +86,14 @@ function ScenarioPlanning() {
               Analisis forecast dan simulasi scenario bisnis
             </p>
           </div>
+
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 px-5 py-2 border border-gray-300 rounded-xl text-sm hover:bg-white transition cursor-pointer"
+          >
+            <ArrowLeft size={18} />
+            Kembali
+          </button>
         </div>
 
         {loading ? (
@@ -99,22 +105,24 @@ function ScenarioPlanning() {
             <div className="grid grid-cols-4 gap-4 mb-6">
               <SummaryCard
                 title="Estimasi Revenue"
-                value={formatRupiah(latestData?.forecast?.estimasi_revenue)}
+                value={formatRupiah(
+                  data?.data?.forecast?.estimasi_revenue ?? 0,
+                )}
                 icon={<TrendingUp size={24} />}
               />
               <SummaryCard
                 title="Cash Flow"
-                value={formatRupiah(latestData?.forecast?.cash_flow)}
+                value={formatRupiah(data?.data?.forecast?.cash_flow ?? 0)}
                 icon={<Wallet size={24} />}
               />
               <SummaryCard
                 title="Budget Promosi"
-                value={formatRupiah(latestData?.forecast?.budget_promosi)}
+                value={formatRupiah(data?.data?.forecast?.budget_promosi ?? 0)}
                 icon={<Target size={24} />}
               />
               <SummaryCard
                 title="Leads Dibutuhkan"
-                value={latestData?.forecast?.leads_dibutuhkan}
+                value={data?.data?.forecast?.leads_dibutuhkan ?? 0}
                 icon={<Users size={24} />}
               />
             </div>
@@ -122,83 +130,19 @@ function ScenarioPlanning() {
             <div className="grid grid-cols-3 gap-4 mb-6">
               <ScenarioCard
                 title="Scenario Optimis"
-                data={latestData?.skenario?.optimis}
+                data={data?.data?.skenario?.optimis ?? 0}
                 color="bg-green-100 text-green-700"
               />
               <ScenarioCard
                 title="Scenario Normal"
-                data={latestData?.skenario?.normal}
+                data={data?.data?.skenario?.normal ?? 0}
                 color="bg-blue-100 text-blue-700"
               />
               <ScenarioCard
                 title="Scenario Pesimis"
-                data={latestData?.skenario?.pesimis}
+                data={data?.data?.skenario?.pesimis ?? 0}
                 color="bg-red-100 text-red-700"
               />
-            </div>
-
-            <div className="rounded-2xl bg-white border shadow-sm overflow-hidden">
-              <div className="p-5 border-b">
-                <h2 className="text-xl font-bold">Riwayat Forecast</h2>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-50 text-gray-600">
-                    <tr>
-                      <th className="px-5 py-4 text-left">Periode</th>
-                      <th className="px-5 py-4 text-left">Revenue</th>
-                      <th className="px-5 py-4 text-left">Cash Flow</th>
-                      <th className="px-5 py-4 text-left">Budget</th>
-                      <th className="px-5 py-4 text-left">Status Forecast</th>
-                      <th className="px-5 py-4 text-left">Status Persetujuan</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.map((item) => (
-                      <tr
-                        key={item.hasil_id}
-                        className="border-t hover:bg-gray-50 transition"
-                      >
-                        <td className="px-5 py-4">{item.periode}</td>
-                        <td className="px-5 py-4 font-medium">
-                          {formatRupiah(item.forecast?.estimasi_revenue)}
-                        </td>
-                        <td className="px-5 py-4">
-                          {formatRupiah(item.forecast?.cash_flow)}
-                        </td>
-                        <td className="px-5 py-4">
-                          {formatRupiah(item.forecast?.budget_promosi)}
-                        </td>
-                        <td className="px-5 py-4">
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                              item.forecast?.status === "Untung"
-                                ? "bg-green-100 text-green-700"
-                                : "bg-red-100 text-red-700"
-                            }`}
-                          >
-                            {item.forecast?.status}
-                          </span>
-                        </td>
-                        {/* Fix: tambah kolom status_persetujuan */}
-                        <td className="px-5 py-4">
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                              item.status_persetujuan === "approved"
-                                ? "bg-green-100 text-green-700"
-                                : item.status_persetujuan === "pending"
-                                ? "bg-yellow-100 text-yellow-700"
-                                : "bg-red-100 text-red-700"
-                            }`}
-                          >
-                            {item.status_persetujuan}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
             </div>
           </>
         )}

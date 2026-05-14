@@ -46,7 +46,11 @@ function App() {
           path="/"
           element={
             localStorage.getItem("idToken") ? (
-              <Navigate to="/dashboard" replace />
+              localStorage.getItem("role") == "admin" ? (
+                <Navigate to="/dashboardAdm" />
+              ) : (
+                <Navigate to="/dashboard" replace />
+              )
             ) : (
               <Navigate to="/login" replace />
             )

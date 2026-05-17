@@ -20,15 +20,11 @@ function DetailPerencanaan() {
   const location = useLocation();
   const isAdmin = localStorage.getItem("role") == "admin";
 
-  // =====================================
   // GET PARAMETER
-  // =====================================
 
   const { periode, id_perencanaan } = location.state;
 
-  // =====================================
   // STATE
-  // =====================================
 
   const [dataDetail, setDataDetail] = useState(null);
 
@@ -38,9 +34,7 @@ function DetailPerencanaan() {
 
   const [forecast, setForecast] = useState(null);
 
-  // =====================================
   // FETCH DETAIL DATA
-  // =====================================
 
   useEffect(() => {
     const getDetailPerencanaan = async () => {
@@ -62,17 +56,13 @@ function DetailPerencanaan() {
     getDetailPerencanaan();
   }, [location.key]);
 
-  // =====================================
   // FORMAT RUPIAH
-  // =====================================
 
   function formatRupiah(value) {
     return `Rp ${Number(value).toLocaleString("id-ID")}`;
   }
 
-  // =====================================
   // FORECAST CALCULATION
-  // =====================================
 
   const calculateForecast = (d) => {
     const customer = d.target_revenue / d.aov;
@@ -86,9 +76,7 @@ function DetailPerencanaan() {
     return forecast > 0 ? "Untung" : "Rugi";
   };
 
-  // =====================================
   // HANDLE INPUT CHANGE
-  // =====================================
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -108,9 +96,7 @@ function DetailPerencanaan() {
     });
   };
 
-  // =====================================
   // HANDLE SAVE
-  // =====================================
 
   const handleSave = async () => {
     try {
@@ -136,9 +122,7 @@ function DetailPerencanaan() {
     }
   };
 
-  // =====================================
   // HANDLE DELETE
-  // =====================================
 
   const handleDelete = async () => {
     const confirmDelete = window.confirm("Yakin ingin menghapus data ini?");
@@ -156,17 +140,13 @@ function DetailPerencanaan() {
     }
   };
 
-  // =====================================
   // CARD COMPONENT
-  // =====================================
 
   const EditableCard = ({ title, name, value, suffix = "" }) => {
     return (
       <div className="bg-white rounded-2xl shadow-sm p-5 border border-gray-100">
         <div className="flex items-center justify-between mb-3">
           <p className="text-sm text-gray-400">{title}</p>
-
-          <Pencil size={16} className="text-gray-400" />
         </div>
 
         {isEdit ? (

@@ -21,6 +21,36 @@ def get_verified_user(authorization: str):
 
 # ── Routes ───────────────────────────────────────────────────────────────────
 
+@router.get("/pending")
+def get_pending_persetujuan(
+    authorization: str = Header(...)
+):
+    """
+    Admin melihat semua hasil perhitungan yang masih menunggu persetujuan.
+    """
+    user = get_verified_user(authorization)
+
+    if user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Hanya admin yang bisa melihat data pending")
+
+    docs = db.collection("hasil_perhitungan")\
+             .where("status_persetujuan", "==", "pending")\
+             .stream()
+
+    hasil = []
+    for doc in docs:
+        data = doc.to_dict()
+        data["hasil_id"] = data.get("hasil_id") or doc.id
+        hasil.append(data)
+
+    return {
+        "message": "Berhasil mengambil data pending",
+        "total"  : len(hasil),
+        "data"   : hasil
+    }
+
+
+@router.post("/approve")
 @router.post("/approve/{hasil_id}")
 def approve_api(
     hasil_id: str,
@@ -85,6 +115,7 @@ def approve_api(
     }
 
 
+@router.post("/reject")
 @router.post("/reject/{hasil_id}")
 def reject_api(
     hasil_id: str,

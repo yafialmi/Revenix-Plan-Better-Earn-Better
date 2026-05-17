@@ -7,7 +7,6 @@ import Laporan from "./pages/laporan";
 import InputPerencanaan from "./pages/InputPerencanaan";
 import KonfirmasiPerencanaan from "./pages/konfirmasiPerencanaan";
 import ProtectedRoute from "./components/protected_routes";
-import DashboardAdm from "./pages/dashboardAdm";
 import DetailPerencanaan from "./pages/detailPerencanaan";
 import DetailLaporan from "./pages/detailLaporan";
 import ScenarioPlanning from "./pages/ScenarioPlanning";
@@ -46,11 +45,7 @@ function App() {
           path="/"
           element={
             localStorage.getItem("idToken") ? (
-              localStorage.getItem("role") == "admin" ? (
-                <Navigate to="/dashboardAdm" />
-              ) : (
-                <Navigate to="/dashboard" replace />
-              )
+              <Navigate to="/dashboard" replace />
             ) : (
               <Navigate to="/login" replace />
             )
@@ -65,14 +60,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/dashboardAdm"
-          element={
-            <ProtectedRoute>
-              <DashboardAdm />
-            </ProtectedRoute>
-          }
-        />
+
         <Route
           path="/perencanaan"
           element={

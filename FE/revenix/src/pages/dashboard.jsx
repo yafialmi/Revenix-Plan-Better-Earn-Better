@@ -91,19 +91,22 @@ function Dashboard() {
               Selamat datang, {localStorage.getItem("username")}
             </p>
           </div>
-
-          <button
-            className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-white shadow transition duration-200 hover:bg-blue-700 cursor-pointer"
-            onClick={() => navigate("/inputperencanaan")}
-          >
-            <svg width={20} height={20} viewBox="0 0 32 32">
-              <path
-                fill="white"
-                d="M16 3C8.832 3 3 8.832 3 16s5.832 13 13 13s13-5.832 13-13S23.168 3 16 3m0 2c6.087 0 11 4.913 11 11s-4.913 11-11 11S5 22.087 5 16S9.913 5 16 5m-1 5v5h-5v2h5v5h2v-5h5v-2h-5v-5z"
-              />
-            </svg>
-            <span>Buat Perencanaan Baru</span>
-          </button>
+          {localStorage.getItem("role") == "admin" ? (
+            <div className=""></div>
+          ) : (
+            <button
+              className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-white shadow transition duration-200 hover:bg-blue-700 cursor-pointer"
+              onClick={() => navigate("/inputperencanaan")}
+            >
+              <svg width={20} height={20} viewBox="0 0 32 32">
+                <path
+                  fill="white"
+                  d="M16 3C8.832 3 3 8.832 3 16s5.832 13 13 13s13-5.832 13-13S23.168 3 16 3m0 2c6.087 0 11 4.913 11 11s-4.913 11-11 11S5 22.087 5 16S9.913 5 16 5m-1 5v5h-5v2h5v5h2v-5h5v-2h-5v-5z"
+                />
+              </svg>
+              <span>Buat Perencanaan Baru</span>
+            </button>
+          )}
         </div>
 
         {/* Ringkasan angka utama yang membantu user membaca kondisi keuangan secara cepat. */}

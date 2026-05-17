@@ -10,7 +10,7 @@ export const authUser = async (email, password) => {
       password,
     });
     return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
+  } catch (e) {
+    throw e.message || e.detail;
   }
 };

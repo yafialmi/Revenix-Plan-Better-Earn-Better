@@ -27,8 +27,8 @@ function Login() {
       localStorage.setItem("role", data.role);
       toast.success(`Login Berhasil! Selamat datang ${email}`);
       navigate("/dashboard", { replace: true });
-    } catch (error) {
-      toast.error(`Login Gagal! ${error.message || error}`);
+    } catch (e) {
+      toast.error(`Login Gagal! Periksa kembali email atau password!`);
     } finally {
       setLoading(false);
     }

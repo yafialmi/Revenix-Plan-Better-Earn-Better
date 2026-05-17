@@ -4,18 +4,23 @@ import { useEffect, useState } from "react";
 import { fetchDataPerencanaan } from "../services/perencanaan/perencanaan_services";
 import toast from "react-hot-toast";
 import { CircularProgress } from "@mui/material";
+import { fetchDataPerencanaanPending } from "../services/persetujuan/persetujuan_services";
 
 function Perencanaan() {
   const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [isLoading, setLoading] = useState(false);
   const location = useLocation();
+  const isAdmin = localStorage.getItem("role") == "admin";
   // Request GET Handler
   useEffect(() => {
     const getPerencanaan = async () => {
       try {
         setLoading(true);
-        const data = await fetchDataPerencanaan();
+        const data =
+          isAdmin
+            ? await fetchDataPerencanaanPending()
+            : await fetchDataPerencanaan();
         setData(data);
       } catch (e) {
         toast.error(`${e.message || e.detail}`);
@@ -40,29 +45,35 @@ function Perencanaan() {
         </div>
 
         {/* Area pencarian disiapkan untuk memfilter daftar perencanaan berdasarkan tahun. */}
-        <section className="bg-white rounded-xl shadow-sm p-4 mb-4">
-          <h2 className="text-lg font-bold mb-3">Pencarian</h2>
+        {isAdmin ? (
+          <div className=""></div>
+        ) : (
+          <section className="bg-white rounded-xl shadow-sm p-4 mb-4">
+            <h2 className="text-lg font-bold mb-3">Pencarian</h2>
 
-          <div className="flex flex-col md:flex-row gap-3">
-            <div className="flex items-center flex-1 border border-gray-300 rounded-xl px-4 py-2.5 focus-within:border-blue-600 transition ease-in-out duration-300">
-              <input
-                type="text"
-                placeholder="Cari berdasarkan tahun"
-                className="w-full outline-none text-sm text-gray-500 bg-transparent "
-              />
+            <div className="flex flex-col md:flex-row gap-3">
+              <div className="flex items-center flex-1 border border-gray-300 rounded-xl px-4 py-2.5 focus-within:border-blue-600 transition ease-in-out duration-300">
+                <input
+                  type="text"
+                  placeholder="Cari berdasarkan tahun"
+                  className="w-full outline-none text-sm text-gray-500 bg-transparent "
+                />
+              </div>
+
+              <button className="cursor-pointer px-5 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-700 hover:bg-red-500 hover:text-white transition duration-300">
+                Reset
+              </button>
             </div>
-
-            <button className="cursor-pointer px-5 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-700 hover:bg-red-500 hover:text-white transition duration-300">
-              Reset
-            </button>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* Daftar utama perencanaan yang berisi kartu per tahun. */}
         <section className="bg-white rounded-xl shadow-sm p-4 flex-1 flex flex-col min-h-0">
           <div className="flex items-start justify-between mb-3">
             <div>
-              <h2 className="text-lg font-bold font-poppins">Detail Laporan</h2>
+              <h2 className="text-lg font-bold font-poppins">
+                Detail Perencanaan
+              </h2>
               <p className="text-sm text-gray-500">
                 Daftar perencanaan berdasarkan tahun
               </p>
@@ -83,7 +94,7 @@ function Perencanaan() {
                 {data?.data?.map((item, index) => (
                   <div
                     key={index}
-                    className="border border-gray-200 rounded-xl px-5 py-4 bg-white shadow-sm hover:shadow-md transition flex items-center justify-between"
+                    className={`border border-gray-200 rounded-xl px-5 py-4 bg-white shadow-sm hover:shadow-md transition flex items-center justify-between `}
                   >
                     <div>
                       <h3 className="font-bold text-base">

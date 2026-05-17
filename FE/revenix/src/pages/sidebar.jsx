@@ -3,7 +3,6 @@ import { NavLink, useNavigate } from "react-router-dom";
 
 function Sidebar() {
   const navigate = useNavigate();
-
   const handleLogout = () => {
     localStorage.removeItem("idToken");
     localStorage.removeItem("refreshToken");
@@ -70,7 +69,11 @@ function Sidebar() {
     <aside className="w-[260px] min-w-[260px] max-w-[260px] h-screen bg-white border-r border-gray-200 flex-none flex flex-col justify-between p-6">
       <div>
         <div className="flex items-center gap-3 mb-10">
-          <img src={logo} alt="logo" className="w-20 h-20 rounded-full object-contain" />
+          <img
+            src={logo}
+            alt="logo"
+            className="w-20 h-20 rounded-full object-contain"
+          />
           <div className="min-w-0">
             <h1 className="text-base font-poppins font-bold tracking-wide text-black">
               Revenix

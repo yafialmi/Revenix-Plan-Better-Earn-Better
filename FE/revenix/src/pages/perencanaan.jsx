@@ -79,11 +79,14 @@ function Perencanaan() {
     }
 
     try {
-      // TODO: Isi implementasi tombol Setuju di sini.
+      setLoading(true);
       const data = await postPersetujuanApproved(hasilId, catatan_admin);
       toast.success(`${data.message}`);
     } catch (e) {
       toast.error(e.message || e.detail);
+    } finally {
+      setOpenApprove(false);
+      setLoading(false);
     }
   };
 
@@ -98,11 +101,15 @@ function Perencanaan() {
     }
 
     try {
-      // TODO: Isi implementasi tombol Tolak di sini.
+      setLoading(true);
       const data = await postPersetujuanRejected(hasilId, catatan_admin);
       toast.success(`${data.message}`);
     } catch (e) {
       toast.error(e.message || e.detail);
+    } finally {
+      setLoading(false);
+      setOpenApprove(false);
+      s;
     }
   };
 

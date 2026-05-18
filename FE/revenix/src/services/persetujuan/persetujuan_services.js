@@ -11,10 +11,13 @@ export const fetchDataPerencanaanPending = async () => {
   }
 };
 
-export const postPersetujuanApproved = async (id_laporan) => {
+export const postPersetujuanApproved = async (id_laporan, catatan) => {
   try {
     const response = await axiosInstanceAuthenticated.post(
       `/persetujuan/approve/${id_laporan}`,
+      {
+        catatan,
+      },
     );
     return response.data;
   } catch (e) {
@@ -22,10 +25,13 @@ export const postPersetujuanApproved = async (id_laporan) => {
   }
 };
 
-export const postPersetujuanRejected = async (id_laporan) => {
+export const postPersetujuanRejected = async (id_laporan, catatan) => {
   try {
     const response = await axiosInstanceAuthenticated.post(
       `/persetujuan/reject/${id_laporan}`,
+      {
+        catatan,
+      },
     );
     return response.data;
   } catch (e) {

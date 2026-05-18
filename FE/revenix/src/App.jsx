@@ -5,7 +5,6 @@ import Dashboard from "./pages/dashboard";
 import Perencanaan from "./pages/perencanaan";
 import Laporan from "./pages/laporan";
 import InputPerencanaan from "./pages/InputPerencanaan";
-import KonfirmasiPerencanaan from "./pages/konfirmasiPerencanaan";
 import ProtectedRoute from "./components/protected_routes";
 import DetailPerencanaan from "./pages/detailPerencanaan";
 import DetailLaporan from "./pages/detailLaporan";
@@ -82,14 +81,6 @@ function App() {
           element={
             <ProtectedRoute>
               <InputPerencanaan />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/konfirmasiPerencanaan"
-          element={
-            <ProtectedRoute>
-              <KonfirmasiPerencanaan />
             </ProtectedRoute>
           }
         />

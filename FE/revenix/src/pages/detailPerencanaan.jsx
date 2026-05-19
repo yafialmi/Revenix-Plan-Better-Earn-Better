@@ -13,12 +13,43 @@ import toast from "react-hot-toast";
 
 import { CircularProgress } from "@mui/material";
 
-import { Pencil, Save, Trash2, ArrowLeft } from "lucide-react";
+import { Pencil, Save, Trash2, ArrowLeft, X } from "lucide-react";
+
+const EditableCard = ({
+  title,
+  name,
+  value,
+  suffix = "",
+  isEdit,
+  onChange,
+  formatRupiah,
+}) => {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm p-5 border border-gray-100">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-sm text-gray-400">{title}</p>
+      </div>
+
+      {isEdit ? (
+        <input
+          type="number"
+          name={name}
+          value={value}
+          onChange={onChange}
+          className="w-full border rounded-xl px-4 py-3 text-xl font-bold outline-none"
+        />
+      ) : (
+        <p className="text-2xl font-bold">
+          {suffix ? `${value}${suffix}` : formatRupiah(value)}
+        </p>
+      )}
+    </div>
+  );
+};
 
 function DetailPerencanaan() {
   const navigate = useNavigate();
   const location = useLocation();
-  const isAdmin = localStorage.getItem("role") == "admin";
 
   // GET PARAMETER
 
@@ -31,6 +62,8 @@ function DetailPerencanaan() {
   const [isLoading, setLoading] = useState(false);
 
   const [isEdit, setIsEdit] = useState(false);
+
+  const [dataBeforeEdit, setDataBeforeEdit] = useState(null);
 
   const [forecast, setForecast] = useState(null);
 
@@ -54,7 +87,7 @@ function DetailPerencanaan() {
     };
 
     getDetailPerencanaan();
-  }, [location.key]);
+  }, [id_perencanaan, location.key]);
 
   // FORMAT RUPIAH
 
@@ -116,10 +149,24 @@ function DetailPerencanaan() {
 
       toast.success("Data berhasil diupdate");
 
+      setDataBeforeEdit(null);
+
       setIsEdit(false);
-    } catch (e) {
+    } catch {
       toast.error("Gagal update data");
     }
+  };
+
+  // HANDLE CANCEL EDIT
+
+  const handleCancelEdit = () => {
+    if (dataBeforeEdit) {
+      setDataDetail(dataBeforeEdit);
+      setForecast(calculateForecast(dataBeforeEdit.data));
+    }
+
+    setDataBeforeEdit(null);
+    setIsEdit(false);
   };
 
   // HANDLE DELETE
@@ -135,35 +182,9 @@ function DetailPerencanaan() {
       toast.success("Data berhasil dihapus");
 
       navigate("/perencanaan");
-    } catch (e) {
+    } catch {
       toast.error("Gagal menghapus data");
     }
-  };
-
-  // CARD COMPONENT
-
-  const EditableCard = ({ title, name, value, suffix = "" }) => {
-    return (
-      <div className="bg-white rounded-2xl shadow-sm p-5 border border-gray-100">
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-sm text-gray-400">{title}</p>
-        </div>
-
-        {isEdit ? (
-          <input
-            type="number"
-            name={name}
-            value={value}
-            onChange={handleChange}
-            className="w-full border rounded-xl px-4 py-3 text-xl font-bold outline-none"
-          />
-        ) : (
-          <p className="text-2xl font-bold">
-            {suffix ? `${value}${suffix}` : formatRupiah(value)}
-          </p>
-        )}
-      </div>
-    );
   };
 
   return (
@@ -226,12 +247,18 @@ function DetailPerencanaan() {
                 title="Target Revenue"
                 name="target_revenue"
                 value={dataDetail?.data?.target_revenue ?? 0}
+                isEdit={isEdit}
+                onChange={handleChange}
+                formatRupiah={formatRupiah}
               />
 
               <EditableCard
                 title="AOV"
                 name="aov"
                 value={dataDetail?.data?.aov ?? 0}
+                isEdit={isEdit}
+                onChange={handleChange}
+                formatRupiah={formatRupiah}
               />
 
               <EditableCard
@@ -239,18 +266,27 @@ function DetailPerencanaan() {
                 name="conversion_rate"
                 value={dataDetail?.data?.conversion_rate ?? 0}
                 suffix="%"
+                isEdit={isEdit}
+                onChange={handleChange}
+                formatRupiah={formatRupiah}
               />
 
               <EditableCard
                 title="Cost per Lead"
                 name="cost_per_lead"
                 value={dataDetail?.data?.cost_per_lead ?? 0}
+                isEdit={isEdit}
+                onChange={handleChange}
+                formatRupiah={formatRupiah}
               />
 
               <EditableCard
                 title="Total Biaya"
                 name="total_biaya_op"
                 value={dataDetail?.data?.total_biaya_op ?? 0}
+                isEdit={isEdit}
+                onChange={handleChange}
+                formatRupiah={formatRupiah}
               />
 
               {/* STATUS */}
@@ -286,16 +322,29 @@ function DetailPerencanaan() {
             {/* ACTION BUTTON */}
             <div className="flex justify-end gap-3 pb-10">
               {isEdit ? (
-                <button
-                  onClick={handleSave}
-                  className="flex items-center gap-2 px-5 py-3 bg-green-500 text-white rounded-xl hover:bg-green-600 transition cursor-pointer"
-                >
-                  <Save size={18} />
-                  Simpan
-                </button>
+                <>
+                  <button
+                    onClick={handleCancelEdit}
+                    className="flex items-center gap-2 px-5 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-white transition cursor-pointer"
+                  >
+                    <X size={18} />
+                    Batal
+                  </button>
+
+                  <button
+                    onClick={handleSave}
+                    className="flex items-center gap-2 px-5 py-3 bg-green-500 text-white rounded-xl hover:bg-green-600 transition cursor-pointer"
+                  >
+                    <Save size={18} />
+                    Simpan
+                  </button>
+                </>
               ) : (
                 <button
-                  onClick={() => setIsEdit(true)}
+                  onClick={() => {
+                    setDataBeforeEdit(dataDetail);
+                    setIsEdit(true);
+                  }}
                   className="flex items-center gap-2 px-5 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition cursor-pointer"
                 >
                   <Pencil size={18} />

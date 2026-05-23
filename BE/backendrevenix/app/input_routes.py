@@ -35,6 +35,50 @@ def get_verified_user(authorization: str):
         raise HTTPException(status_code=401, detail="Token tidak valid atau sudah expired")
     return user
 
+# ── Formula Kalkulasi (sama persis dengan perhitungan_routes) ─────────────────
+
+def calculate_leads_needed(target_revenue: float, aov: float, conversion_rate: float) -> float:
+    return target_revenue / (aov * conversion_rate)
+
+def calculate_budget(leads: float, cost_per_lead: float) -> float:
+    return leads * cost_per_lead
+
+def calculate_revenue(leads: float, conversion_rate: float, aov: float) -> float:
+    return leads * conversion_rate * aov
+
+def forecast_cash_flow(target_revenue: float, total_biaya_op: float) -> float:
+    return target_revenue - total_biaya_op
+
+def simulate_scenario(
+    target_revenue: float,
+    aov: float,
+    conversion_rate: float,
+    cost_per_lead: float,
+    total_biaya_op: float,
+    scenario: str
+) -> dict:
+    if scenario == "optimis":
+        adjusted_rate = conversion_rate * 1.2
+    elif scenario == "pesimis":
+        adjusted_rate = conversion_rate * 0.8
+    else:
+        adjusted_rate = conversion_rate
+
+    leads = calculate_leads_needed(target_revenue, aov, adjusted_rate)
+    budget = calculate_budget(leads, cost_per_lead)
+    cash_flow = forecast_cash_flow(target_revenue, total_biaya_op)
+    revenue = calculate_revenue(leads, adjusted_rate, aov)
+
+    return {
+        "scenario": scenario,
+        "conversion_rate_digunakan": round(adjusted_rate, 4),
+        "leads_dibutuhkan": round(leads, 2),
+        "budget_promosi": round(budget, 2),
+        "estimasi_revenue": round(revenue, 2),
+        "cash_flow": round(cash_flow, 2),
+        "status": "Untung" if cash_flow > 0 else "Rugi"
+    }
+
 # ── Routes ───────────────────────────────────────────────────────────────────
 
 @router.post("/")
@@ -44,6 +88,8 @@ def tambah_input(
 ):
     """
     User menginput parameter bisnis baru.
+    Setelah input disimpan, otomatis langsung dihitung dan
+    disimpan ke hasil_perhitungan dengan status 'pending'.
     Hanya role 'user' yang bisa akses endpoint ini.
     """
     user = get_verified_user(authorization)
@@ -77,10 +123,66 @@ def tambah_input(
 
     db.collection("input_data").document(input_id).set(doc_data)
 
+    # ── Otomatis hitung setelah input disimpan ────────────────────────────
+    target_revenue  = data.target_revenue
+    aov             = data.aov
+    conversion_rate = data.conversion_rate
+    cost_per_lead   = data.cost_per_lead
+    total_biaya_op  = data.total_biaya_op
+
+    leads    = calculate_leads_needed(target_revenue, aov, conversion_rate)
+    budget   = calculate_budget(leads, cost_per_lead)
+    revenue  = calculate_revenue(leads, conversion_rate, aov)
+    cashflow = forecast_cash_flow(target_revenue, total_biaya_op)
+
+    forecast = {
+        "leads_dibutuhkan"  : round(leads, 2),
+        "budget_promosi"    : round(budget, 2),
+        "estimasi_revenue"  : round(revenue, 2),
+        "cash_flow"         : round(cashflow, 2),
+        "status"            : "Untung" if cashflow > 0 else "Rugi"
+    }
+
+    skenario_optimis = simulate_scenario(target_revenue, aov, conversion_rate, cost_per_lead, total_biaya_op, "optimis")
+    skenario_normal  = simulate_scenario(target_revenue, aov, conversion_rate, cost_per_lead, total_biaya_op, "normal")
+    skenario_pesimis = simulate_scenario(target_revenue, aov, conversion_rate, cost_per_lead, total_biaya_op, "pesimis")
+
+    hasil_id = str(uuid.uuid4())
+
+    hasil_data = {
+        "hasil_id"          : hasil_id,
+        "input_id"          : input_id,
+        "user_id"           : user["uid"],
+        "email"             : user["email"],
+        "periode"           : data.periode,
+        "parameter"         : {
+            "target_revenue"  : target_revenue,
+            "aov"             : aov,
+            "conversion_rate" : conversion_rate,
+            "cost_per_lead"   : cost_per_lead,
+            "total_biaya_op"  : total_biaya_op
+        },
+        "forecast"          : forecast,
+        "skenario"          : {
+            "optimis" : skenario_optimis,
+            "normal"  : skenario_normal,
+            "pesimis" : skenario_pesimis
+        },
+        "status_persetujuan": "pending",
+        "catatan_admin"     : None,
+        "created_at"        : now,
+        "updated_at"        : now
+    }
+
+    db.collection("hasil_perhitungan").document(hasil_id).set(hasil_data)
+    # ─────────────────────────────────────────────────────────────────────
+
     return {
-        "message": "Input data berhasil disimpan",
-        "input_id": input_id,
-        "data": doc_data
+        "message"  : "Input data berhasil disimpan dan perhitungan otomatis dilakukan",
+        "input_id" : input_id,
+        "hasil_id" : hasil_id,
+        "data"     : doc_data,
+        "hasil_perhitungan": hasil_data
     }
 
 

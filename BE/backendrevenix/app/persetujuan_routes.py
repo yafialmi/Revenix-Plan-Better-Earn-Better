@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Header
+from pydantic import BaseModel
 from app.auth_service import verify_token
 from app.models.persetujuan import Persetujuan
 from app.models.user import User
@@ -9,7 +10,12 @@ from datetime import datetime
 router = APIRouter()
 db = firestore.client()
 
-# ── Helper ───────────────────────────────────────────────────────────────────
+# ── Model Request  ─────────────────────────────────────────────────────
+
+class CatatanRequest(BaseModel):
+    catatan: str
+
+# ── Helper ─────────────────────────────────────────────────────────────
 
 def get_verified_user(authorization: str):
     """Verifikasi token dan kembalikan data user."""
@@ -19,29 +25,24 @@ def get_verified_user(authorization: str):
         raise HTTPException(status_code=401, detail="Token tidak valid atau sudah expired")
     return user
 
-# ── Routes ───────────────────────────────────────────────────────────────────
+# ── Routes ─────────────────────────────────────────────────────────────
 
 @router.get("/pending")
-def get_pending_persetujuan(
-    authorization: str = Header(...)
-):
+def get_semua_pending(authorization: str = Header(...)):
     """
-    Admin melihat semua hasil perhitungan yang masih menunggu persetujuan.
+    Admin melihat semua hasil perhitungan yang menunggu persetujuan.
+    Hanya role 'admin' yang bisa akses endpoint ini.
     """
     user = get_verified_user(authorization)
 
     if user["role"] != "admin":
-        raise HTTPException(status_code=403, detail="Hanya admin yang bisa melihat data pending")
+        raise HTTPException(status_code=403, detail="Hanya admin yang bisa akses")
 
     docs = db.collection("hasil_perhitungan")\
              .where("status_persetujuan", "==", "pending")\
              .stream()
 
-    hasil = []
-    for doc in docs:
-        data = doc.to_dict()
-        data["hasil_id"] = data.get("hasil_id") or doc.id
-        hasil.append(data)
+    hasil = [doc.to_dict() for doc in docs]
 
     return {
         "message": "Berhasil mengambil data pending",
@@ -50,10 +51,10 @@ def get_pending_persetujuan(
     }
 
 
-@router.post("/approve")
 @router.post("/approve/{hasil_id}")
 def approve_api(
     hasil_id: str,
+    data: CatatanRequest,
     authorization: str = Header(...)
 ):
     """
@@ -65,7 +66,7 @@ def approve_api(
     if user["role"] != "admin":
         raise HTTPException(status_code=403, detail="Hanya admin yang bisa melakukan approve")
 
-    # Ambil data user dari Firestore
+    #Ambil data user dari Firestore
     user_docs = list(db.collection("user").where("UID", "==", user["uid"]).stream())
     if not user_docs:
         raise HTTPException(status_code=404, detail="User tidak ditemukan di Firestore")
@@ -102,7 +103,7 @@ def approve_api(
     # Update Firestore
     hasil_ref.update({
         "status_persetujuan": p.get_status_str(),
-        "catatan_admin"     : message,
+        "catatan_admin"     : data.catatan,
         "updated_at"        : datetime.utcnow().isoformat()
     })
 
@@ -111,14 +112,15 @@ def approve_api(
         "role"            : current_user.role.name,
         "approval_status" : p.get_status_str(),
         "hasil_id"        : hasil_id,
-        "message"         : message
+        "message"         : message,
+        "catatan_admin"   : data.catatan
     }
 
 
-@router.post("/reject")
 @router.post("/reject/{hasil_id}")
 def reject_api(
     hasil_id: str,
+    data: CatatanRequest,
     authorization: str = Header(...)
 ):
     """
@@ -167,7 +169,7 @@ def reject_api(
     # Update Firestore
     hasil_ref.update({
         "status_persetujuan": p.get_status_str(),
-        "catatan_admin"     : message,
+        "catatan_admin"     : data.catatan,
         "updated_at"        : datetime.utcnow().isoformat()
     })
 
@@ -176,7 +178,8 @@ def reject_api(
         "role"            : current_user.role.name,
         "approval_status" : p.get_status_str(),
         "hasil_id"        : hasil_id,
-        "message"         : message
+        "message"         : message,
+        "catatan_admin"   : data.catatan
     }
 
 

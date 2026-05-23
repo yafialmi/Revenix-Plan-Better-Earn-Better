@@ -1,10 +1,11 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from app.auth_service import verify_token
 import requests
 
 router = APIRouter()
 
-FIREBASE_API_KEY = ""
+FIREBASE_API_KEY = "AIzaSyARSJMsU8l0CtyDqHiv2GOU1nQmQWgUaz8"
 
 class LoginRequest(BaseModel):
     email: str
@@ -27,10 +28,16 @@ def login(data: LoginRequest):
 
     result = res.json()
 
+    # ── Ambil role & username dari custom claims via verify_token ─────────────
+    user_info = verify_token(result["idToken"])
+    role     = user_info.get("role") if user_info else None
+    username = user_info.get("email", "").split("@")[0] if user_info else None
+
     return {
-        "message": "Login berhasil",
-        "idToken": result["idToken"],  
+        "message"     : "Login berhasil",
+        "idToken"     : result["idToken"],
         "refreshToken": result["refreshToken"],
-        "email": result["email"],
-        "displayName": result["displayName"]
+        "email"       : result["email"],
+        "username"    : username,
+        "role"        : role
     }
